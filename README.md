@@ -8,8 +8,9 @@ WePost is a modern and minimalistic social media platform that allows users to s
 ## 🚀 Tech Stack
 
 - **Framework:** Next.js 15
-- **Authentication:** Lucia (Auth.js)
+- **Authentication:** Lucia (Auth.js alternative)
 - **Database:** Neon PostgreSQL
+- **Database ORM:** Prisma ORM
 - **UI Components:** shadcn-ui
 - **Styling:** Tailwind CSS
 - **Hosting:** Vercel
