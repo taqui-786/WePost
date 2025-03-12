@@ -22,3 +22,7 @@ export const signinSchema = z.object({
 });
 
 export type signinSchemaValues = z.infer<typeof signinSchema>;
+
+export const createPostSchema = z.object({
+  content: requiredString,
+})
