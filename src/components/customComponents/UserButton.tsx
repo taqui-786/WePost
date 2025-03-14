@@ -12,32 +12,25 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "../ui/button";
 import { LogOut, Settings, User } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import Link from "next/link";
 import { logout } from "@/app/(auth)/login/action";
+import UserAvatar from "./UserAvatar";
 
 function UserButton() {
   const { user } = useSession();
   const [open, setOpen] = useState(false);
 
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase();
-  };
   return (
-    <DropdownMenu open={open} onOpenChange={setOpen}  >
+    <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative cursor-pointer h-8 w-8 rounded-full sm:ms-auto">
-          <Avatar className="h-10 w-10">
-            {user.avatarUrl ? (
-              <AvatarImage src={user.avatarUrl} alt={user.displayName} />
-            ) : (
-              <AvatarFallback>{getInitials(user.displayName)}</AvatarFallback>
-            )}
-          </Avatar>
+        <Button
+          variant="ghost"
+          className="relative h-8 w-8 cursor-pointer rounded-full sm:ms-auto"
+        >
+          <UserAvatar
+            userAvatarUrl={user?.avatarUrl}
+            userName={user.displayName}
+          />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>

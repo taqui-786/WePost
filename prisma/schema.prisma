@@ -23,7 +23,7 @@ model User {
   email        String?   @unique
   passwordHash String?
   googleId     String?   @unique
-  avaratUrl    String?
+  avatarUrl    String?
   bio          String?
   session      Session[]
   createdAt    DateTime  @default(now())

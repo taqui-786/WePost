@@ -11,7 +11,7 @@ function Navbar() {
         <div className="flex items-center justify-center gap-2">
           <Icon className="text-primary " fill="text-primary" />
           <Link href="/" className="text-primary text-2xl font-bold">
-            SocialBook
+          WePost
           </Link>
         </div>
         <SearchUserInput />

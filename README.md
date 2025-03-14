@@ -1,9 +1,9 @@
-# WePost - A Simple Social Media Platform (Development in Progress)
+# WePost - (🚧 Under Development 🚧)
 
 WePost is a modern and minimalistic social media platform that allows users to share posts, connect with others, and engage in discussions. Built with cutting-edge technologies, WePost offers a seamless and secure user experience.
 
 ## 🌐 Live Demo
-[WePost Live](https://wepost.app)
+[WePost Live](https://we-post-dev.vercel.app)
 
 ## 🚀 Tech Stack
 
