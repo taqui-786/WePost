@@ -15,11 +15,12 @@ import { LogOut, Settings, User } from "lucide-react";
 import Link from "next/link";
 import { logout } from "@/app/(auth)/login/action";
 import UserAvatar from "./UserAvatar";
+import { useQueryClient } from "@tanstack/react-query";
 
 function UserButton() {
   const { user } = useSession();
   const [open, setOpen] = useState(false);
-
+  const queryClient = useQueryClient();
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
@@ -60,7 +61,12 @@ function UserButton() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => logout()}>
+        <DropdownMenuItem
+          onClick={() => {
+            queryClient.clear();
+            logout();
+          }}
+        >
           <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>
         </DropdownMenuItem>
