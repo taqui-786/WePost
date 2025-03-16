@@ -3,9 +3,9 @@ import React from "react";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
-import { Button } from "@/components/ui/button";
 import "./style.css";
 import { useSubmitPostMutation } from "./mutations";
+import LoadingButton from "@/components/ui/LoadingButton";
 function PostEditor() {
   const mutation = useSubmitPostMutation();
   const editor = useEditor({
@@ -44,13 +44,14 @@ function PostEditor() {
       </div>
       <div className="flex justify-end">
         {" "}
-        <Button
+        <LoadingButton
           onClick={onSubmit}
-          disabled={!input.trim()}
+          disabled={!input.trim() || mutation.isPending}
           className="min-w-20"
+          loading={mutation.isPending}
         >
           Post
-        </Button>
+        </LoadingButton>
       </div>
     </div>
   );
