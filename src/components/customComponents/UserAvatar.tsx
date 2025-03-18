@@ -6,8 +6,9 @@ interface UserAvatarProps {
   userAvatarUrl: string | null;
   userName: string | null;
   className?: string;
+  size?: number;
 }
-function UserAvatar({ userName, userAvatarUrl, className }: UserAvatarProps) {
+function UserAvatar({ userName, userAvatarUrl, className, size }: UserAvatarProps) {
   const getInitials = (name: string) => {
     const underscoreIndex = name.indexOf("_");
     const hyphenIndex = name.indexOf("-");
@@ -24,11 +25,15 @@ function UserAvatar({ userName, userAvatarUrl, className }: UserAvatarProps) {
   };
 
   return (
-    <Avatar className={cn("h-10 w-10", className)}>
+    <Avatar className={cn("h-10 w-10", className)} >
       {userAvatarUrl && userAvatarUrl ? (
-        <AvatarImage src={userAvatarUrl} alt={userName || "social_app"} />
+        <AvatarImage src={userAvatarUrl}
+        width={size ?? 48}
+        height={size ?? 48}
+        className="aspect-square flex-none"
+        alt={userName || "social_app"} />
       ) : (
-        <AvatarFallback>{getInitials(userName || "social_app")}</AvatarFallback>
+        <AvatarFallback   className="aspect-square flex-none">{getInitials(userName || "social_app")}</AvatarFallback>
       )}
     </Avatar>
   );

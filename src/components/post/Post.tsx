@@ -23,7 +23,7 @@ function Post({ post }: { post: PostData }) {
           </Link>
           <div className="">
             <Link
-              href={`/user/${post.user.username}`}
+              href={`/users/${post.user.username}`}
               className="block font-medium hover:underline"
             >
               {post.user.username}
