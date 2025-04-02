@@ -1,12 +1,13 @@
 import { validateRequest } from "@/auth";
 import prisma from "@/lib/prisma";
 import { getUserDataSelect } from "@/lib/types";
-import { Loader2 } from "lucide-react";
+import { Loader2, Tag, UserPlus } from "lucide-react";
 import Link from "next/link";
 import React, { Suspense } from "react";
 import UserAvatar from "./UserAvatar";
 import { unstable_cache } from "next/cache";
 import FollowButton from "./FollowButton";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 
 function TrendzSidebar() {
   return (
@@ -39,45 +40,61 @@ async function WhoToFollow() {
     take: 5,
   });
   return (
-    <div className="bg-card space-y-5 rounded-2xl p-5 shadow-sm">
-      <div className="text-xl font-bold">Who to follow</div>
-      {usersToFollow.map((user) => {
-        return (
-          <div
-            className="flex items-center justify-between gap-3"
-            key={user.id}
-          >
-            <Link
-              href={`/users/${user.username}`}
-              className="flex items-center gap-3"
-            >
-              <UserAvatar
-                userAvatarUrl={user.avatarUrl}
-                className="flex-none"
-                userName={user.username}
-              />
-              <div>
-                <p className="line-clamp-1 font-semibold break-all hover:underline">
-                  {user.displayName}
-                </p>
-                <p className="text-muted-foreground line-clamp-1 text-xs break-all">
-                  @{user.username}
-                </p>
-              </div>
-            </Link>
-            <FollowButton
-              userId={user.id}
-              initialState={{
-                followers: user._count.Followers,
-                isFollowedByUser: user.Followers.some(
-                  ({ followerId }) => followerId === user.id,
-                ),
-              }}
-            />
+    <Card className="gap-5">
+      <CardHeader>
+        <CardTitle className="text-xl font-bold">Who to follow</CardTitle>
+      </CardHeader>
+      {!usersToFollow.length && (
+        <CardContent className="flex flex-col items-center justify-center py-8 text-center">
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
+            <UserPlus className="text-muted-foreground h-8 w-8" />
           </div>
-        );
-      })}
-    </div>
+          <h3 className="mb-1 text-lg font-medium">No suggestions yet</h3>
+          <p className="text-muted-foreground mb-4 max-w-xs text-sm">
+            We are working on finding interesting people for you to follow.
+            Check back soon!
+          </p>
+        </CardContent>
+      )}
+      <CardContent className="space-y-5">
+        {usersToFollow.map((user) => {
+          return (
+            <div
+              className="flex items-center justify-between gap-3"
+              key={user.id}
+            >
+              <Link
+                href={`/users/${user.username}`}
+                className="flex items-center gap-3"
+              >
+                <UserAvatar
+                  userAvatarUrl={user.avatarUrl}
+                  className="flex-none"
+                  userName={user.username}
+                />
+                <div>
+                  <p className="line-clamp-1 font-semibold break-all hover:underline">
+                    {user.displayName}
+                  </p>
+                  <p className="text-muted-foreground line-clamp-1 text-xs break-all">
+                    @{user.username}
+                  </p>
+                </div>
+              </Link>
+              <FollowButton
+                userId={user.id}
+                initialState={{
+                  followers: user._count.Followers,
+                  isFollowedByUser: user.Followers.some(
+                    ({ followerId }) => followerId === user.id,
+                  ),
+                }}
+              />
+            </div>
+          );
+        })}
+      </CardContent>
+    </Card>
   );
 }
 
@@ -105,26 +122,42 @@ async function TrendingTopics() {
   const trendingTopics = await getTrendingTopics();
 
   return (
-    <div className="bg-card space-y-5 rounded-2xl p-5 shadow-sm">
-      <div className="text-xl font-bold">Trending topics</div>
-      {trendingTopics.map(({ hashtag, count }) => {
-        const title = hashtag.split("#")[1];
+    <Card className="gap-5">
+      <CardHeader>
+        <CardTitle className="text-xl font-bold">Trending topics</CardTitle>
+      </CardHeader>
+      {!trendingTopics.length && (
+        <CardContent className="flex flex-col items-center justify-center py-8 text-center">
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
+            <Tag className="text-muted-foreground h-8 w-8" />
+          </div>
+          <h3 className="mb-1 text-lg font-medium">No trending topics</h3>
+          <p className="text-muted-foreground mb-4 max-w-xs text-sm">
+            We are working on finding interesting topics for you. Check back
+            soon!
+          </p>
+        </CardContent>
+      )}
+      <CardContent className="space-y-5">
+        {trendingTopics.map(({ hashtag, count }) => {
+          const title = hashtag.split("#")[1];
 
-        return (
-          <Link key={title} href={`/hashtag/${title}`} className="block">
-            <p
-              className="line-clamp-1 font-semibold break-all hover:underline"
-              title={hashtag}
-            >
-              {hashtag}
-            </p>
-            <p className="text-muted-foreground text-sm">
-              {formatNumber(count)} {count === 1 ? "post" : "posts"}
-            </p>
-          </Link>
-        );
-      })}
-    </div>
+          return (
+            <Link key={title} href={`/hashtag/${title}`} className="block">
+              <p
+                className="line-clamp-1 font-semibold break-all hover:underline"
+                title={hashtag}
+              >
+                {hashtag}
+              </p>
+              <p className="text-muted-foreground text-sm">
+                {formatNumber(count)} {count === 1 ? "post" : "posts"}
+              </p>
+            </Link>
+          );
+        })}
+      </CardContent>
+    </Card>
   );
 }
 export const formatNumber = (n: number): string => {

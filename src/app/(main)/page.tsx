@@ -10,7 +10,7 @@ export default function Home() {
       <div className="w-full min-w-0 space-y-5">
         <PostEditor />
         <Tabs defaultValue="my-feed">
-          <TabsList className=" w-full bg-background grid-cols-2 gap-2 p-2 h-10 ">
+          <TabsList className=" w-full  grid-cols-2 gap-2 p-2 h-10 ">
             <TabsTrigger value="my-feed" className="cursor-pointer">My Feed</TabsTrigger>
             <TabsTrigger value="following-feed" className="cursor-pointer">Followings</TabsTrigger>
           </TabsList>
