@@ -28,8 +28,8 @@ function MyFeed() {
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   });
   const posts = data?.pages.flatMap((page) => page.posts) || [];
-  if (status === "pending") {
-    return <PostsLoadingSkeleton/>
+  if (status === "pending" || isFetching && !isFetchingNextPage) {
+    return <PostsLoadingSkeleton />;
   }
   if (status === "error") {
     return (
@@ -47,10 +47,10 @@ function MyFeed() {
       {posts.map((post) => (
         <Post key={post.id} post={post} />
       ))}
-      {isFetchingNextPage && <PostsLoadingSkeleton/>}
-      {!hasNextPage &&   <p className="text-primary text-center">
-        You Reached to an end!
-      </p>}
+      {isFetchingNextPage && <PostsLoadingSkeleton />}
+      {!hasNextPage && (
+        <p className="text-primary text-center">You Reached to an end!</p>
+      )}
     </InfiniteScrollingContainer>
   );
 }

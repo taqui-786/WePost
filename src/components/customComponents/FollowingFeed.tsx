@@ -28,7 +28,7 @@ function FollowingFeed() {
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   });
   const posts = data?.pages.flatMap((page) => page.posts) || [];
-  if (status === "pending") {
+  if (status === "pending" || isFetching && !isFetchingNextPage) {
     return <PostsLoadingSkeleton/>
   }
   if (status === "error") {
@@ -38,6 +38,7 @@ function FollowingFeed() {
       </p>
     );
   }
+console.log({posts});
 
   return (
     <InfiniteScrollingContainer
@@ -49,7 +50,7 @@ function FollowingFeed() {
       ))}
       {isFetchingNextPage && <PostsLoadingSkeleton/>}
       {!hasNextPage &&   <p className="text-primary text-center">
-        No Post Found, Start Following People to see their posts.
+        No More Post Found, Start Following People to see their posts.
       </p>}
     </InfiniteScrollingContainer>
   );

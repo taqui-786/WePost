@@ -9,10 +9,15 @@ export default function Home() {
     <main className="flex w-full min-w-0 gap-5">
       <div className="w-full min-w-0 space-y-5">
         <PostEditor />
+        {/* <FeedTab/> */}
         <Tabs defaultValue="my-feed">
-          <TabsList className=" w-full  grid-cols-2 gap-2 p-2 h-10 ">
-            <TabsTrigger value="my-feed" className="cursor-pointer">My Feed</TabsTrigger>
-            <TabsTrigger value="following-feed" className="cursor-pointer">Followings</TabsTrigger>
+          <TabsList className="h-10 w-full grid-cols-2 gap-2 p-2">
+            <TabsTrigger value="my-feed" className="cursor-pointer">
+              My Feed
+            </TabsTrigger>
+            <TabsTrigger value="following-feed" className="cursor-pointer">
+              Followings
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="my-feed">
             <MyFeed />
