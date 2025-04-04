@@ -12,14 +12,14 @@ interface MenuBarProps {
 }
 function MenuBar({ className }: MenuBarProps) {
   const router = usePathname();
-  console.log(router);
-  const activeLinkStyle = " rounded-none border-l border-l-4 border-l-primary text-primary";
+  const activeLinkStyle =
+    " rounded-none border-l border-l-4 border-l-primary text-primary";
   return (
     <Card className={className}>
       <CardContent className="space-y-3">
         <Button
           className={cn(
-            "flex items-center justify-start gap-3 ",
+            "flex items-center justify-start gap-3",
             router === "/" && activeLinkStyle,
           )}
           variant="ghost"
@@ -31,7 +31,10 @@ function MenuBar({ className }: MenuBarProps) {
           </Link>
         </Button>
         <Button
-           className={cn("flex items-center justify-start gap-3",router === "/notifications" && activeLinkStyle )}
+          className={cn(
+            "flex items-center justify-start gap-3",
+            router === "/notifications" && activeLinkStyle,
+          )}
           variant="ghost"
           title="Notification"
           asChild
@@ -41,7 +44,10 @@ function MenuBar({ className }: MenuBarProps) {
           </Link>
         </Button>
         <Button
-           className={cn("flex items-center justify-start gap-3",router === "/messages" && activeLinkStyle )}
+          className={cn(
+            "flex items-center justify-start gap-3",
+            router === "/messages" && activeLinkStyle,
+          )}
           variant="ghost"
           title="Messages"
           asChild
@@ -51,7 +57,10 @@ function MenuBar({ className }: MenuBarProps) {
           </Link>
         </Button>
         <Button
-           className={cn("flex items-center justify-start gap-3",router.startsWith("/bookmarks") && activeLinkStyle )}
+          className={cn(
+            "flex items-center justify-start gap-3",
+            router.startsWith("/bookmarks") && activeLinkStyle,
+          )}
           variant="ghost"
           title="Bookmarks"
           asChild

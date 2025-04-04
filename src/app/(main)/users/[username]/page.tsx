@@ -1,5 +1,7 @@
 import { validateRequest } from "@/auth";
 import FollowButton from "@/components/customComponents/FollowButton";
+import FollowerCount from "@/components/customComponents/FollowerCount";
+import ProfileFeed from "@/components/customComponents/ProfileFeed";
 // import FollowerCount from "@/components/customComponents/FollowerCount";
 import TrendzSidebar, {
   formatNumber,
@@ -55,6 +57,12 @@ async function page({ params }: PageProps) {
     <main className="flex w-full min-w-0 gap-5">
       <div className="w-full min-w-0 space-y-5">
         <UserProfile user={user} loggedInUserId={loggedInUser.id} />
+        <div className="bg-card rounded-2xl p-5 shadow-sm">
+          <h2 className="text-center text-2xl font-bold">
+            {user.displayName}&apos;s posts
+          </h2>
+        </div>
+        <ProfileFeed userId={user.id} />
       </div>
       <TrendzSidebar />
     </main>
@@ -98,7 +106,7 @@ async function UserProfile({ loggedInUserId, user }: UserProfileProps) {
                 {formatNumber(user._count.posts)}
               </span>
             </span>
-            {/* <FollowerCount userId={user.id} initialState={followerInfo} /> */}
+            <FollowerCount userId={user.id} initialState={followerInfo} />
           </div>
         </div>
         {user.id === loggedInUserId ? (

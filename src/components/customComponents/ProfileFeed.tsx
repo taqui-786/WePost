@@ -6,8 +6,10 @@ import Post from "../post/Post";
 import kyInstance from "@/lib/ky";
 import InfiniteScrollingContainer from "./InfiniteScrollingContainer";
 import PostsLoadingSkeleton from "../post/PostLoadingSkeleton";
-
-function FollowingFeed() {
+interface ProfileFeedProps{
+    userId:string
+}
+function ProfileFeed({userId}:ProfileFeedProps) {
   const {
     data,
     fetchNextPage,
@@ -16,11 +18,11 @@ function FollowingFeed() {
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
-    queryKey: ["post-feed", "my-feed"],
+    queryKey: ["post-feed", "my-feed", userId],
     queryFn: ({ pageParam }) =>
       kyInstance
         .get(
-          "/api/posts/following",
+          `/api/users/${userId}/posts`,
           pageParam ? { searchParams: { cursor: pageParam } } : {},
         )
         .json<PostPage>(),
@@ -29,7 +31,7 @@ function FollowingFeed() {
   });
   const posts = data?.pages.flatMap((page) => page.posts) || [];
   if (status === "pending" || isFetching && !isFetchingNextPage) {
-    return <PostsLoadingSkeleton/>
+    return <PostsLoadingSkeleton />;
   }
   if (status === "error") {
     return (
@@ -47,12 +49,12 @@ function FollowingFeed() {
       {posts.map((post) => (
         <Post key={post.id} post={post} />
       ))}
-      {isFetchingNextPage && <PostsLoadingSkeleton/>}
-      {!hasNextPage &&   <p className="text-primary text-center">
-        No More Post Found, Start Following People to see their posts.
-      </p>}
+      {isFetchingNextPage && <PostsLoadingSkeleton />}
+      {!hasNextPage && !posts.length && (
+        <p className="text-primary text-center">This User do not have any posts.</p>
+      )}
     </InfiniteScrollingContainer>
   );
 }
 
-export default FollowingFeed;
+export default ProfileFeed;

@@ -1,7 +1,7 @@
 "use client"
 import useFollowInfo from "@/hooks/useFollowInfo";
 import { FollowersInfo } from "@/lib/types";
-import { formatNumber } from "./TrendzSidebar";
+import { formatNumber } from "@/lib/utils";
 
 
 
