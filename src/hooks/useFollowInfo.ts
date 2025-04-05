@@ -3,7 +3,7 @@ import { FollowersInfo } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
 
 export default function useFollowInfo(
-  userId: string,
+  userId: string | undefined,
   initialState: FollowersInfo,
 ) {
   const query = useQuery({

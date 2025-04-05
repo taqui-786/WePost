@@ -6,6 +6,8 @@ import { formatRelativeDate } from "@/lib/utils";
 import { useSession } from "@/app/(main)/SessionProvider";
 import PostMoreButton from "./PostMoreButton";
 import { Card, CardContent } from "../ui/card";
+import Linkify from "../customComponents/Linkify";
+import UserTooltip from "../customComponents/UserTooltip";
 
 function Post({ post }: { post: PostData }) {
   const { user } = useSession();
@@ -15,22 +17,26 @@ function Post({ post }: { post: PostData }) {
         <article>
           <div className="flex justify-between gap-3">
             <div className="flex flex-wrap gap-3">
-              <Link
-                href={`/user/${post.user.username}`}
-                className="flex items-center justify-center"
-              >
-                <UserAvatar
-                  userAvatarUrl={post.user.avatarUrl}
-                  userName={post.user.username}
-                />
-              </Link>
-              <div className="">
+              <UserTooltip user={post.user}>
                 <Link
-                  href={`/users/${post.user.username}`}
-                  className="block font-medium hover:underline"
+                  href={`/user/${post.user.username}`}
+                  className="flex items-center justify-center"
                 >
-                  {post.user.username}
+                  <UserAvatar
+                    userAvatarUrl={post.user.avatarUrl}
+                    userName={post.user.username}
+                  />
                 </Link>
+              </UserTooltip>
+              <div className="">
+                <UserTooltip user={post.user}>
+                  <Link
+                    href={`/users/${post.user.username}`}
+                    className="block font-medium hover:underline"
+                  >
+                    {post.user.username}
+                  </Link>
+                </UserTooltip>
                 <span className="text-muted-foreground text-xs">
                   {formatRelativeDate(post.createdAt)}
                 </span>
@@ -43,9 +49,11 @@ function Post({ post }: { post: PostData }) {
               />
             )}
           </div>
-          <div className="text-sm font-normal break-words whitespace-pre-line mt-2">
-            {post.content}
-          </div>
+          <Linkify>
+            <div className="mt-2 text-sm font-normal break-words whitespace-pre-line">
+              {post.content}
+            </div>
+          </Linkify>
         </article>
       </CardContent>
     </Card>

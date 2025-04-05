@@ -1,8 +1,8 @@
 import { validateRequest } from "@/auth";
 import FollowButton from "@/components/customComponents/FollowButton";
 import FollowerCount from "@/components/customComponents/FollowerCount";
+import Linkify from "@/components/customComponents/Linkify";
 import ProfileFeed from "@/components/customComponents/ProfileFeed";
-// import FollowerCount from "@/components/customComponents/FollowerCount";
 import TrendzSidebar, {
   formatNumber,
 } from "@/components/customComponents/TrendzSidebar";
@@ -118,9 +118,11 @@ async function UserProfile({ loggedInUserId, user }: UserProfileProps) {
           <>
             <hr />
             <>
-              <div className="overflow-hidden break-words whitespace-pre-line">
-                {user.bio}
-              </div>
+              <Linkify>
+                <div className="overflow-hidden break-words whitespace-pre-line">
+                  {user.bio}
+                </div>
+              </Linkify>
             </>
           </>
         )}

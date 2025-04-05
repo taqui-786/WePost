@@ -41,6 +41,7 @@ function FollowButton({ initialState, userId }: FollowButtonProps) {
     <Button
       variant={data.isFollowedByUser ? "secondary" : "default"}
       onClick={() => mutate()}
+      className="cursor-pointer"
       size="sm"
     >
       {data.isFollowedByUser ? "UnFollow" : "Follow"}

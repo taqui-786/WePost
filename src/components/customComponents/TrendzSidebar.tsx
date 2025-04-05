@@ -8,6 +8,7 @@ import UserAvatar from "./UserAvatar";
 import { unstable_cache } from "next/cache";
 import FollowButton from "./FollowButton";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import UserTooltip from "./UserTooltip";
 
 function TrendzSidebar() {
   return (
@@ -63,6 +64,7 @@ async function WhoToFollow() {
               className="flex items-center justify-between gap-3"
               key={user.id}
             >
+              <UserTooltip user={user}>
               <Link
                 href={`/users/${user.username}`}
                 className="flex items-center gap-3"
@@ -80,7 +82,7 @@ async function WhoToFollow() {
                     @{user.username}
                   </p>
                 </div>
-              </Link>
+              </Link></UserTooltip>
               <FollowButton
                 userId={user.id}
                 initialState={{

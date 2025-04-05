@@ -6,7 +6,7 @@ import { formatNumber } from "@/lib/utils";
 
 
 interface FollowerCountProps {
-  userId: string;
+  userId: string | undefined;
   initialState: FollowersInfo;
 }
 
