@@ -2,11 +2,11 @@ import { validateRequest } from "@/auth";
 import FollowButton from "@/components/customComponents/FollowButton";
 import FollowerCount from "@/components/customComponents/FollowerCount";
 import Linkify from "@/components/customComponents/Linkify";
+import MyProfileAvatar from "@/components/customComponents/MyProfileAvatar";
 import ProfileFeed from "@/components/customComponents/ProfileFeed";
 import TrendzSidebar, {
   formatNumber,
 } from "@/components/customComponents/TrendzSidebar";
-import UserAvatar from "@/components/customComponents/UserAvatar";
 import { Button } from "@/components/ui/button";
 import prisma from "@/lib/prisma";
 import { FollowersInfo, getUserDataSelect, UserData } from "@/lib/types";
@@ -52,11 +52,11 @@ async function page({ params }: PageProps) {
   }
   const { username } = await params;
   const user = await getUser(username, loggedInUser.id);
-
+ 
   return (
     <main className="flex w-full min-w-0 gap-5">
       <div className="w-full min-w-0 space-y-5">
-        <UserProfile user={user} loggedInUserId={loggedInUser.id} />
+        <UserProfile user={user} loggedInUserId={loggedInUser.id}  />
         <div className="bg-card rounded-2xl p-5 shadow-sm">
           <h2 className="text-center text-2xl font-bold">
             {user.displayName}&apos;s posts
@@ -83,12 +83,14 @@ async function UserProfile({ loggedInUserId, user }: UserProfileProps) {
       ({ followerId }) => followerId === loggedInUserId,
     ),
   };
+  
 
   return (
     <div className="bg-card h-fit w-full space-y-5 rounded-2xl p-5 shadow-sm">
-      <UserAvatar
+      <MyProfileAvatar
         userAvatarUrl={user.avatarUrl}
         userName={user.username}
+        userId={user.id}
         size={250}
         className="mx-auto size-full max-h-60 max-w-60 rounded-full"
       />
