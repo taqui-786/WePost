@@ -58,25 +58,7 @@ function PostEditor() {
         </div>
       </CardContent>
     </Card>
-    // <div className="bg-card flex flex-col gap-5 rounded-2xl p-5 shadow-sm">
-    // <div className="flex">
-    //   <EditorContent
-    //     editor={editor}
-    //     className="max-h-[20rem] w-full overflow-y-auto rounded-2xl bg-gray-100 px-5 py-3"
-    //   />
-    // </div>
-    // <div className="flex justify-end">
-    //   {" "}
-    //   <LoadingButton
-    //     onClick={onSubmit}
-    //     disabled={!input.trim() || mutation.isPending}
-    //     className="min-w-20"
-    //     loading={mutation.isPending}
-    //   >
-    //     Post
-    //   </LoadingButton>
-    // </div>
-    // </div>
+
   );
 }
 
