@@ -1,5 +1,5 @@
 "use client";
-import useFollowInfo from "@/hooks/useFollowInfo";
+import { useFollowInfo } from "@/hooks/useFollowInfo";
 import { FollowersInfo } from "@/lib/types";
 import { QueryKey, useMutation, useQueryClient } from "@tanstack/react-query";
 import React from "react";
@@ -26,16 +26,18 @@ function FollowButton({ initialState, userId }: FollowButtonProps) {
         followers:
           (previousState?.followers || 0) +
           (previousState?.isFollowedByUser ? -1 : 1),
+        following: (previousState?.following || 0) + 1,
+        // following: (loggedInUser.id === userId ?(previousState?.following || 0) +
+        // (previousState?.isFollowedByUser ? 1 : 1) : (previousState?.following || 0)),
         isFollowedByUser: !previousState?.isFollowedByUser,
       }));
-      return {previousState};
+      return { previousState };
     },
     onError(error, variables, context) {
-        queryClient.setQueryData(queryKey, context?.previousState)
-        toast.error("Failed to follow user")
-        console.log(error);
-        
-    }
+      queryClient.setQueryData(queryKey, context?.previousState);
+      toast.error("Failed to follow user");
+      console.log(error);
+    },
   });
   return (
     <Button

@@ -1,5 +1,6 @@
 import { validateRequest } from "@/auth";
 import prisma from "@/lib/prisma";
+import { ProfileFormSchema } from "@/lib/validation";
 import { NextRequest } from "next/server";
 
 export async function PUT(req: NextRequest) {
@@ -8,17 +9,14 @@ export async function PUT(req: NextRequest) {
     if (!loggedInUser) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const { bio, name, avatar } = await req.json();
+    const body = await req.json();
+    const parsed =  ProfileFormSchema.safeParse(body);
 
     await prisma.user.update({
       where: {
         id: loggedInUser.id,
       },
-      data: {
-        bio,
-        displayName: name,
-        avatarUrl: avatar,
-      },
+      data: parsed.data!,
     });
     return new Response(JSON.stringify({ success: true }), { status: 200 });
   } catch (error) {

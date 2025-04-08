@@ -15,10 +15,19 @@ export function getUserDataSelect(loggedInUserId: string) {
         followerId: true,
       },
     },
+    Following: {
+      where: {
+        followingId: loggedInUserId,
+      },
+      select: {
+        followingId: true,
+      },
+    },
     _count: {
       select: {
         posts: true,
         Followers: true,
+        Following:true
       },
     },
   } satisfies Prisma.UserSelect;
@@ -57,5 +66,11 @@ export interface PostPage {
 
 export interface FollowersInfo {
   followers: number;
+  following?:number;
   isFollowedByUser: boolean;
 }
+export interface FollowingInfo {
+  followings: number;
+  isFollowingUser: boolean;
+}
+

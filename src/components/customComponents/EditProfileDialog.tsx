@@ -17,9 +17,9 @@ import { toast } from "sonner";
 import kyInstance from "@/lib/ky";
 import { handleFirebaseImageUpload } from "@/lib/Firebase";
 import { useRouter } from "next/navigation";
-import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ProfileFormSchema, UpdateProfileFormValues } from "@/lib/validation";
 
 interface ProfileFormProps {
   defaultValues?: {
@@ -34,30 +34,26 @@ interface ProfileFormProps {
     instagram?: string;
   };
 }
-export const ProfileFormSchema = z.object({
-  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
 
-  bio: z.string().max(300).optional(),
-  avatar: z.any().optional(),
-});
-export type UpdateProfileFormValues = z.infer<typeof ProfileFormSchema>;
 export default function EditProfileDialog({ defaultValues }: ProfileFormProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [open, setOpen] = useState(false)
   const [previewUrl, setPreviewUrl] = useState<string | null>(
-    defaultValues!.avatar 
+    defaultValues!.avatar,
   );
   const [newImage, setNewImage] = useState<File | null>();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const {
     register,
     handleSubmit,
+    setValue, getValues,
     formState: { errors },
   } = useForm<UpdateProfileFormValues>({
     resolver: zodResolver(ProfileFormSchema),
     defaultValues: {
-      name: defaultValues?.name || "",
-
+      displayName: defaultValues?.name || "",
+      avatarUrl: defaultValues?.avatar || "",
       bio: defaultValues?.bio || "",
     },
   });
@@ -67,33 +63,32 @@ export default function EditProfileDialog({ defaultValues }: ProfileFormProps) {
 
     setNewImage(e.target?.files?.[0] as File);
   };
-  const updateData = async (data: UpdateProfileFormValues) => {
+  const updateData = async () => {
     try {
       setIsLoading(true);
       if (newImage) {
         const getImageUrl = await handleFirebaseImageUpload(newImage as File);
-        const res = await kyInstance.put("/api/users/edit", {
-          json: {
-            name: data.name,
-            avatar: getImageUrl.file.url,
-            bio: data.bio,
-          },
-        });
-        if (res.status === 200)
-          return toast.success("Profile updated Successfully.");
-        return toast.error("Failed to update Profile!");
+        setValue("avatarUrl", getImageUrl.file.url);
       }
+      const finalValues = getValues()
+      const res = await kyInstance.put("/api/users/edit", {
+        json: finalValues,
+      });
+      if (res.status === 200)
+        return toast.success("Profile updated Successfully.");
+      return toast.error("Failed to update Profile!");
     } catch (error) {
       console.log(error);
       toast.error("Internal Server Error!");
     } finally {
       router.refresh();
+      setOpen(false)
       setIsLoading(false);
     }
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button size="sm">Edit Profile</Button>
       </DialogTrigger>
@@ -121,6 +116,7 @@ export default function EditProfileDialog({ defaultValues }: ProfileFormProps) {
                 type="file"
                 accept="image/*"
                 ref={fileInputRef}
+                name="avatarUrl"
                 onChange={handleInputChange}
               />
               <BadgePlus className="size-6 text-zinc-600 dark:text-zinc-400" />
@@ -140,13 +136,15 @@ export default function EditProfileDialog({ defaultValues }: ProfileFormProps) {
                 Display Name
               </Label>
               <Input
-                id="name"
+                id="displayName"
                 placeholder="Your full name"
                 autoComplete="off"
-                {...register("name")}
+                {...register("displayName")}
               />
-              {errors.name && (
-                <p className="text-sm text-red-500">{errors.name.message}</p>
+              {errors.displayName && (
+                <p className="text-sm text-red-500">
+                  {errors.displayName.message}
+                </p>
               )}
             </div>
 
@@ -187,14 +185,6 @@ export default function EditProfileDialog({ defaultValues }: ProfileFormProps) {
           </div>
 
           <div className="flex justify-end gap-4">
-            <Button
-              type="button"
-              variant="outline"
-              className="border-zinc-200/80 hover:bg-zinc-50 dark:border-zinc-800/80 dark:hover:bg-zinc-900/50"
-              onClick={() => console.log("Cancel")}
-            >
-              Cancel
-            </Button>
             <Button
               type="submit"
               className="bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"

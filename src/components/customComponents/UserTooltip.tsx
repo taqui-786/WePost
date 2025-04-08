@@ -12,7 +12,7 @@ import Link from "next/link";
 import UserAvatar from "./UserAvatar";
 import FollowButton from "./FollowButton";
 import Linkify from "./Linkify";
-import FollowerCount from "./FollowerCount";
+import {FollowerCount} from "./FollowerCount";
 
 interface UserTooltipProps extends PropsWithChildren {
   user?: UserData;

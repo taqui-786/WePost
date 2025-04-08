@@ -24,9 +24,18 @@ export async function GET(
             followerId: true,
           },
         },
+        Following: {
+          where: {
+            followingId: loggedInUser.id,
+          },
+          select: {
+            followingId: true,
+          },
+        },
         _count: {
           select: {
             Followers: true,
+            Following:true
           },
         },
       },
@@ -34,11 +43,15 @@ export async function GET(
     if (!user) {
       return Response.json({ error: "User Not Found" }, { status: 404 });
     }
+
     const data: FollowersInfo = {
       followers: user._count.Followers,
+      following:user._count.Following,
       isFollowedByUser: !!user.Followers.length,
     };
-    return Response.json(data);
+    console.log(data);
+    
+    return Response.json(data,{status:200});
   } catch (error) {
     console.log(error);
     return Response.json({ error: "Internal Server Error" }, { status: 500 });

@@ -1,7 +1,7 @@
 import { validateRequest } from "@/auth";
 import EditProfileDialog from "@/components/customComponents/EditProfileDialog";
 import FollowButton from "@/components/customComponents/FollowButton";
-import FollowerCount from "@/components/customComponents/FollowerCount";
+import {FollowerCount} from "@/components/customComponents/FollowerCount";
 import Linkify from "@/components/customComponents/Linkify";
 import ProfileFeed from "@/components/customComponents/ProfileFeed";
 import TrendzSidebar, {
@@ -79,10 +79,12 @@ interface UserProfileProps {
 async function UserProfile({ loggedInUserId, user }: UserProfileProps) {
   const followerInfo: FollowersInfo = {
     followers: user._count.Followers,
+    following: user._count.Following,
     isFollowedByUser: user.Followers.some(
       ({ followerId }) => followerId === loggedInUserId,
     ),
   };
+
 
   return (
     <div className="bg-card h-fit w-full space-y-5 rounded-2xl p-5 shadow-sm">
@@ -106,7 +108,7 @@ async function UserProfile({ loggedInUserId, user }: UserProfileProps) {
                 {formatNumber(user._count.posts)}
               </span>
             </span>
-            <FollowerCount userId={user.id} initialState={followerInfo} />
+            <FollowerCount userId={user.id} initialState={followerInfo}  />
           </div>
         </div>
         {user.id === loggedInUserId ? (
@@ -120,7 +122,7 @@ async function UserProfile({ loggedInUserId, user }: UserProfileProps) {
             }}
           />
         ) : (
-          <FollowButton userId={user.id} initialState={followerInfo} />
+          <FollowButton userId={user.id} initialState={followerInfo}  />
         )}
         {user.bio && (
           <>

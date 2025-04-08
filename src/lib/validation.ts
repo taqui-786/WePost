@@ -26,3 +26,11 @@ export type signinSchemaValues = z.infer<typeof signinSchema>;
 export const createPostSchema = z.object({
   content: requiredString,
 })
+
+
+export const ProfileFormSchema = z.object({
+  displayName: z.string().min(2, { message: "Name must be at least 2 characters." }).optional(),
+  bio: z.string().max(300).optional(),
+  avatarUrl: z.any().optional(),
+});
+export type UpdateProfileFormValues = z.infer<typeof ProfileFormSchema>;

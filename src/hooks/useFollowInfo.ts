@@ -2,7 +2,7 @@ import kyInstance from "@/lib/ky";
 import { FollowersInfo } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
 
-export default function useFollowInfo(
+export  function useFollowInfo(
   userId: string | undefined,
   initialState: FollowersInfo,
 ) {
