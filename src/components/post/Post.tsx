@@ -19,7 +19,7 @@ function Post({ post }: { post: PostData }) {
             <div className="flex flex-wrap gap-3">
               <UserTooltip user={post.user}>
                 <Link
-                  href={`/user/${post.user.username}`}
+                  href={`/users/${post.user.username}`}
                   className="flex items-center justify-center"
                 >
                   <UserAvatar

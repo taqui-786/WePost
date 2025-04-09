@@ -17,7 +17,7 @@ import { logout } from "@/app/(auth)/login/action";
 import UserAvatar from "./UserAvatar";
 import { useQueryClient } from "@tanstack/react-query";
 
-function UserButton() {
+function NavbarUserMenu() {
   const { user } = useSession();
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
@@ -48,7 +48,7 @@ function UserButton() {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link href="/profile" className="flex w-full cursor-pointer">
+            <Link href={`/users/${user.username}`} className="flex w-full cursor-pointer">
               <User className="mr-2 h-4 w-4" />
               <span>Profile</span>
             </Link>
@@ -75,4 +75,4 @@ function UserButton() {
   );
 }
 
-export default UserButton;
+export default NavbarUserMenu;

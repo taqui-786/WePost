@@ -1,5 +1,5 @@
 import SearchUserInput from "@/components/customComponents/SearchUserInput";
-import UserButton from "@/components/customComponents/UserButton";
+import NavbarUserMenu from "@/components/customComponents/NavbarUserMenu";
 import Icon from "@/components/Icon";
 import Link from "next/link";
 import React from "react";
@@ -15,7 +15,7 @@ function Navbar() {
           </Link>
         </div>
         <SearchUserInput />
-        <UserButton />
+        <NavbarUserMenu />
       </div>
     </header>
   );
