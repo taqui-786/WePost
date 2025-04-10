@@ -27,10 +27,9 @@ model User {
   bio          String?
   session      Session[]
   posts        Post[]
-   Following       Follow[] @relation("Following")
-  Followers       Follow[] @relation("Followers")
+  Following    Follow[]  @relation("Following")
+  Followers    Follow[]  @relation("Followers")
   createdAt    DateTime  @default(now())
- 
 
   @@map("users")
 }
@@ -49,20 +48,23 @@ model Follow {
   follower    User   @relation("Following", references: [id], fields: [followerId], onDelete: Cascade)
   followingId String
   following   User   @relation("Followers", references: [id], fields: [followingId], onDelete: Cascade)
-@@unique([followerId, followingId])
-@@map("follows")
+
+  @@unique([followerId, followingId])
+  @@map("follows")
 }
 
 model Post {
-  id        String   @id @default(cuid())
-  content   String
-  userId    String
-    attachments         Media[]
-  user      User     @relation(references: [id], fields: [userId], onDelete: Cascade)
-  createdAt DateTime @default(now())
+  id          String   @id @default(cuid())
+  content     String
+  userId      String
+  attachments Media[]
+  images      String[]
+  user        User     @relation(references: [id], fields: [userId], onDelete: Cascade)
+  createdAt   DateTime @default(now())
 
   @@map("posts")
 }
+
 model Media {
   id     String    @id @default(cuid())
   postId String?

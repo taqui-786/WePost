@@ -2,12 +2,13 @@ import { PostData } from "@/lib/types";
 import Link from "next/link";
 import React from "react";
 import UserAvatar from "../customComponents/UserAvatar";
-import { formatRelativeDate } from "@/lib/utils";
+import { cn, formatRelativeDate } from "@/lib/utils";
 import { useSession } from "@/app/(main)/SessionProvider";
 import PostMoreButton from "./PostMoreButton";
 import { Card, CardContent } from "../ui/card";
 import Linkify from "../customComponents/Linkify";
 import UserTooltip from "../customComponents/UserTooltip";
+import Image from "next/image";
 
 function Post({ post }: { post: PostData }) {
   const { user } = useSession();
@@ -54,6 +55,18 @@ function Post({ post }: { post: PostData }) {
               {post.content}
             </div>
           </Linkify>
+          <div
+            className={cn(
+              "flex flex-col gap-3",
+              post.images.length > 1 && "sm:grid sm:grid-cols-2",
+            )}
+          >
+            {post.images.length
+              ? post.images.map((media, indx) => {
+                  return <MediaPreview media={media} key={indx} />;
+                })
+              : ""}
+          </div>
         </article>
       </CardContent>
     </Card>
@@ -61,3 +74,38 @@ function Post({ post }: { post: PostData }) {
 }
 
 export default Post;
+
+interface MediaPreviewProps {
+  media: string;
+}
+
+function MediaPreview({ media }: MediaPreviewProps) {
+  // if (media.includes("2Fimage")) {
+  //   return <DynamicImage url={media} />;
+  // }
+  if (media.includes("2Fimage")) {
+    return (
+      <Image
+        src={media}
+        alt="Attachment"
+        width={500}
+        height={500}
+        className="mx-auto size-fit max-h-[30rem] rounded-2xl"
+      />
+    );
+  }
+
+  if (media.includes("2Fvideo")) {
+    return (
+      <div>
+        <video
+          src={media}
+          controls
+          className="mx-auto size-fit max-h-[30rem] rounded-2xl"
+        />
+      </div>
+    );
+  }
+
+  return <p className="text-destructive">Unsupported media type</p>;
+}

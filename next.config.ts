@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
-
+// @ts-check
+import withPlaiceholder from "@plaiceholder/next";
 const nextConfig: NextConfig = {
   /* config options here */
   experimental:{
@@ -7,7 +8,16 @@ const nextConfig: NextConfig = {
       dynamic:30,
     }
   },
+  images:{
+    remotePatterns: [
+        {
+          protocol: 'https',
+          hostname: 'firebasestorage.googleapis.com',
+          
+        }
+      ],
+   },
   serverExternalPackages:["@node-rs/argon2"],
 };
 
-export default nextConfig;
+export default withPlaiceholder(nextConfig);
