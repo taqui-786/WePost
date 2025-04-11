@@ -41,6 +41,7 @@ export default function UserLinkWithTooltip({
       <Link
         href={`/users/${username}`}
         className="text-primary hover:underline"
+        suppressHydrationWarning
       >
         {children}
       </Link>

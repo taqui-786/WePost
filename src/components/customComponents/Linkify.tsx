@@ -33,6 +33,7 @@ function LinkifyUsername({ children }: LinkifyProps) {
             key={key}
             href={`/users/${match.slice(1)}`}
             className="text-primary hover:underline"
+            suppressHydrationWarning
           >
             {match}
           </Link>
@@ -53,6 +54,7 @@ function LinkifyHastags({ children }: LinkifyProps) {
           key={key}
           href={`/hashtags/${match.slice(1)}`}
           className="text-primary hover:underline"
+          suppressHydrationWarning
         >
           {match}
         </Link>

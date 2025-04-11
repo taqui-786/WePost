@@ -46,7 +46,20 @@ export function getPostDataInclude(loggedInUserId: string) {
   return {
     user: {
       select: getUserDataSelect(loggedInUserId),
+      
     },
+    likes:{
+      where:{
+          userId:loggedInUserId
+      },
+      select:{
+          userId:true}
+  },
+  _count:{
+      select:{
+          likes:true
+      }
+  }
   } satisfies Prisma.PostInclude;
 }
 export const postDataInclude = {
@@ -74,3 +87,7 @@ export interface FollowingInfo {
   isFollowingUser: boolean;
 }
 
+export interface LikeInfoType{
+  likes: number;
+  isLikedByUser: boolean;
+}

@@ -126,8 +126,8 @@ async function UserProfile({ loggedInUserId, user }: UserProfileProps) {
         )}
         {user.bio && (
           <>
-            <hr />
             <>
+            <hr className="text-muted-foreground w-full" />
               <Linkify>
                 <div className="overflow-hidden break-words whitespace-pre-line">
                   {user.bio}

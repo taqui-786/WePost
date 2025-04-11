@@ -27,8 +27,7 @@ function FollowButton({ initialState, userId }: FollowButtonProps) {
           (previousState?.followers || 0) +
           (previousState?.isFollowedByUser ? -1 : 1),
         following: (previousState?.following || 0) + 1,
-        // following: (loggedInUser.id === userId ?(previousState?.following || 0) +
-        // (previousState?.isFollowedByUser ? 1 : 1) : (previousState?.following || 0)),
+       
         isFollowedByUser: !previousState?.isFollowedByUser,
       }));
       return { previousState };

@@ -1,3 +1,4 @@
+'use client'
 import { PostData } from "@/lib/types";
 import Link from "next/link";
 import React from "react";
@@ -5,10 +6,11 @@ import UserAvatar from "../customComponents/UserAvatar";
 import { cn, formatRelativeDate } from "@/lib/utils";
 import { useSession } from "@/app/(main)/SessionProvider";
 import PostMoreButton from "./PostMoreButton";
-import { Card, CardContent } from "../ui/card";
+import { Card, CardContent, CardFooter } from "../ui/card";
 import Linkify from "../customComponents/Linkify";
 import UserTooltip from "../customComponents/UserTooltip";
 import Image from "next/image";
+import LikeButton from "../customComponents/LikeButton";
 
 function Post({ post }: { post: PostData }) {
   const { user } = useSession();
@@ -38,9 +40,11 @@ function Post({ post }: { post: PostData }) {
                     {post.user.username}
                   </Link>
                 </UserTooltip>
+                <Link href={`/posts/${post.id}`} suppressHydrationWarning className="block hover:underline">
                 <span className="text-muted-foreground text-xs">
                   {formatRelativeDate(post.createdAt)}
                 </span>
+                </Link>
               </div>
             </div>
             {user.id === post.user.id && (
@@ -57,8 +61,8 @@ function Post({ post }: { post: PostData }) {
           </Linkify>
           <div
             className={cn(
-              "flex flex-col gap-3",
-              post.images.length > 1 && "sm:grid sm:grid-cols-2",
+              "flex flex-col gap-3 mt-4",
+              post.images.length > 1 && "sm:grid sm:grid-cols-2 ",
             )}
           >
             {post.images.length
@@ -68,6 +72,12 @@ function Post({ post }: { post: PostData }) {
               : ""}
           </div>
         </article>
+        <CardFooter className="flex justify-end mt-2">
+          <LikeButton postId={post.id} initialState={{
+            likes: post._count.likes,
+            isLikedByUser: !!post.likes.some(({userId}) => userId === user.id)
+          }} />
+        </CardFooter>
       </CardContent>
     </Card>
   );

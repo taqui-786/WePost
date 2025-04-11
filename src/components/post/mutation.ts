@@ -35,7 +35,7 @@ export function useDeletePostMutation() {
         },
       );
       toast.success("Post Deleted");
-      if (pathName === `/post/${deletedPost.id}`) {
+      if (pathName === `/posts/${deletedPost.id}`) {
         router.push("/");
       }
     },
