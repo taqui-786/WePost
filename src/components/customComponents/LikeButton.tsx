@@ -4,7 +4,6 @@ import kyInstance from "@/lib/ky";
 import { LikeInfoType } from "@/lib/types";
 import { QueryKey, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Button } from "../ui/button";
 import { Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -37,15 +36,15 @@ function LikeButton({ initialState, postId }: LikeButtonProps) {
     })
 
     return (
-        <Button 
+        <button 
         onClick={() => mutate()}
-        variant={'ghost'}
-        size={'sm'}
+        className="flex items-center gap-2 cursor-pointer"
+      
         >
 
-<Heart className={cn("size-6 text-red-500 ", data.isLikedByUser&& " fill-red-500")} />
-<span className="text-lg text-muted-foreground">{data.likes}</span>
-        </Button>
+<Heart className={cn("size-5  ", data.isLikedByUser&& " text-red-500 fill-red-500")} />
+<span className="text-sm font-medium tabular-nums ">{data.likes} <span className="hidden sm:inline">likes</span></span>
+        </button>
     )
 }
 

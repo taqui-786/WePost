@@ -6,7 +6,7 @@ import UserAvatar from "../customComponents/UserAvatar";
 import { cn, formatRelativeDate } from "@/lib/utils";
 import { useSession } from "@/app/(main)/SessionProvider";
 import PostMoreButton from "./PostMoreButton";
-import { Card, CardContent, CardFooter } from "../ui/card";
+import { Card, CardContent } from "../ui/card";
 import Linkify from "../customComponents/Linkify";
 import UserTooltip from "../customComponents/UserTooltip";
 import Image from "next/image";
@@ -15,7 +15,7 @@ import LikeButton from "../customComponents/LikeButton";
 function Post({ post }: { post: PostData }) {
   const { user } = useSession();
   return (
-    <Card className="group">
+    <Card className="group py-4">
       <CardContent>
         <article>
           <div className="flex justify-between gap-3">
@@ -59,25 +59,25 @@ function Post({ post }: { post: PostData }) {
               {post.content}
             </div>
           </Linkify>
+          {post.images.length ?
           <div
             className={cn(
-              "flex flex-col gap-3 mt-4",
+              "flex flex-col gap-3 my-4",
               post.images.length > 1 && "sm:grid sm:grid-cols-2 ",
             )}
           >
-            {post.images.length
-              ? post.images.map((media, indx) => {
+             {  post.images.map((media, indx) => {
                   return <MediaPreview media={media} key={indx} />;
-                })
-              : ""}
+                })}
           </div>
-        </article>
-        <CardFooter className="flex justify-end mt-2">
+              : ""}
+          <hr className="text-muted-foreground w-full mt-2 pb-4" />
           <LikeButton postId={post.id} initialState={{
             likes: post._count.likes,
             isLikedByUser: !!post.likes.some(({userId}) => userId === user.id)
           }} />
-        </CardFooter>
+        </article>
+     
       </CardContent>
     </Card>
   );
