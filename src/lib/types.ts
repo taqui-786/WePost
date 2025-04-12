@@ -55,6 +55,13 @@ export function getPostDataInclude(loggedInUserId: string) {
       select:{
           userId:true}
   },
+    bookmarks:{
+      where:{
+          userId:loggedInUserId
+      },
+      select:{
+          userId:true}
+  },
   _count:{
       select:{
           likes:true
@@ -90,4 +97,7 @@ export interface FollowingInfo {
 export interface LikeInfoType{
   likes: number;
   isLikedByUser: boolean;
+}
+export interface BookmarkInfoType{
+  isBookmarkByUser: boolean;
 }

@@ -11,6 +11,7 @@ import Linkify from "../customComponents/Linkify";
 import UserTooltip from "../customComponents/UserTooltip";
 import Image from "next/image";
 import LikeButton from "../customComponents/LikeButton";
+import BookmarkButton from "../customComponents/BookmarkButton";
 
 function Post({ post }: { post: PostData }) {
   const { user } = useSession();
@@ -72,10 +73,16 @@ function Post({ post }: { post: PostData }) {
           </div>
               : ""}
           <hr className="text-muted-foreground w-full mt-2 pb-4" />
+          <div className="flex items-center ">
+
           <LikeButton postId={post.id} initialState={{
             likes: post._count.likes,
             isLikedByUser: !!post.likes.some(({userId}) => userId === user.id)
           }} />
+          <BookmarkButton postId={post.id} initialState={{
+            isBookmarkByUser: !!post.bookmarks.some(({userId}) => userId === user.id)
+          }} />
+          </div>
         </article>
      
       </CardContent>
