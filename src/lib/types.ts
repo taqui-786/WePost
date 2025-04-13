@@ -27,7 +27,7 @@ export function getUserDataSelect(loggedInUserId: string) {
       select: {
         posts: true,
         Followers: true,
-        Following:true
+        Following: true
       },
     },
   } satisfies Prisma.UserSelect;
@@ -46,27 +46,30 @@ export function getPostDataInclude(loggedInUserId: string) {
   return {
     user: {
       select: getUserDataSelect(loggedInUserId),
-      
+
     },
-    likes:{
-      where:{
-          userId:loggedInUserId
+    likes: {
+      where: {
+        userId: loggedInUserId
       },
-      select:{
-          userId:true}
-  },
-    bookmarks:{
-      where:{
-          userId:loggedInUserId
-      },
-      select:{
-          userId:true}
-  },
-  _count:{
-      select:{
-          likes:true
+      select: {
+        userId: true
       }
-  }
+    },
+    bookmarks: {
+      where: {
+        userId: loggedInUserId
+      },
+      select: {
+        userId: true
+      }
+    },
+    _count: {
+      select: {
+        likes: true,
+        Comment:true
+      }
+    }
   } satisfies Prisma.PostInclude;
 }
 export const postDataInclude = {
@@ -84,9 +87,23 @@ export interface PostPage {
   nextCursor: string | null;
 }
 
+export function getCommentDataInclude(loggedInUserId: string) {
+  return {
+    user: {
+      select: getUserDataSelect(loggedInUserId)
+    }
+  } satisfies Prisma.CommentInclude
+}
+export type commentData = Prisma.CommentGetPayload<{
+  include: ReturnType<typeof getCommentDataInclude>;
+}>
+export interface CommentsPage {
+  comments: commentData[];
+  previousCursor: string | null;
+}
 export interface FollowersInfo {
   followers: number;
-  following?:number;
+  following?: number;
   isFollowedByUser: boolean;
 }
 export interface FollowingInfo {
@@ -94,10 +111,10 @@ export interface FollowingInfo {
   isFollowingUser: boolean;
 }
 
-export interface LikeInfoType{
+export interface LikeInfoType {
   likes: number;
   isLikedByUser: boolean;
 }
-export interface BookmarkInfoType{
+export interface BookmarkInfoType {
   isBookmarkByUser: boolean;
 }

@@ -1,7 +1,7 @@
 'use client'
 import { PostData } from "@/lib/types";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import UserAvatar from "../customComponents/UserAvatar";
 import { cn, formatRelativeDate } from "@/lib/utils";
 import { useSession } from "@/app/(main)/SessionProvider";
@@ -12,9 +12,12 @@ import UserTooltip from "../customComponents/UserTooltip";
 import Image from "next/image";
 import LikeButton from "../customComponents/LikeButton";
 import BookmarkButton from "../customComponents/BookmarkButton";
+import { MessageSquare } from "lucide-react";
+import Comments from "./comment/Comments";
 
 function Post({ post }: { post: PostData }) {
   const { user } = useSession();
+  const [showComments, setShowComments] = useState(false)
   return (
     <Card className="group py-4">
       <CardContent>
@@ -74,17 +77,20 @@ function Post({ post }: { post: PostData }) {
               : ""}
           <hr className="text-muted-foreground w-full mt-2 pb-4" />
           <div className="flex items-center ">
+                <div className="flex items-center gap-5">
 
           <LikeButton postId={post.id} initialState={{
             likes: post._count.likes,
             isLikedByUser: !!post.likes.some(({userId}) => userId === user.id)
           }} />
+          <CommentButton post={post} onClick={() => setShowComments(!showComments)}  />
+          </div>
           <BookmarkButton postId={post.id} initialState={{
             isBookmarkByUser: !!post.bookmarks.some(({userId}) => userId === user.id)
           }} />
           </div>
         </article>
-     
+     {showComments && <Comments post={post} />}
       </CardContent>
     </Card>
   );
@@ -127,4 +133,18 @@ function MediaPreview({ media }: MediaPreviewProps) {
   }
 
   return <p className="text-destructive">Unsupported media type</p>;
+}
+
+interface CommentsButton {
+  post:PostData,
+  onClick: () => void
+}
+
+function CommentButton({post,onClick}:CommentsButton){
+  return(
+    <button onClick={onClick} className="flex items-center gap-2 cursor-pointer">
+      <MessageSquare className="size-5 " />
+      <span className="text-sm font-medium tabular-nums">{post._count.Comment} <span className="hidden sm:inline">comments</span></span>
+    </button>
+  )
 }

@@ -42,3 +42,7 @@ export const ProfileFormSchema = z.object({
   avatarUrl: z.any().optional(),
 });
 export type UpdateProfileFormValues = z.infer<typeof ProfileFormSchema>;
+
+export const createCommentSchema = z.object({
+  content: requiredString
+})
