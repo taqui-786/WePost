@@ -13,11 +13,11 @@ interface MenuBarProps {
 function MenuBar({ className }: MenuBarProps) {
   const router = usePathname();
   const activeLinkStyle =
-  "rounded-none border-b-4 border-b-primary sm:border-b-0 sm:border-l-4 sm:border-l-primary text-primary";
+    "rounded-none border-b-4 border-b-primary sm:border-b-0 sm:border-l-4 sm:border-l-primary text-primary";
 
   return (
-    <Card className={cn(className," rounded-none sm:rounded-2xl ")}>
-      <CardContent className=" px-3 flex justify-between  sm:block sm:px-6 sm:space-y-3">
+    <Card className={cn(className, "rounded-none sm:rounded-2xl")}>
+      <CardContent className="flex justify-between px-6 sm:block sm:space-y-3">
         <Button
           className={cn(
             "flex items-center justify-start gap-3",

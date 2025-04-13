@@ -35,7 +35,7 @@ export async function GET(
         _count: {
           select: {
             Followers: true,
-            Following:true
+            Following: true
           },
         },
       },
@@ -46,12 +46,12 @@ export async function GET(
 
     const data: FollowersInfo = {
       followers: user._count.Followers,
-      following:user._count.Following,
+      following: user._count.Following,
       isFollowedByUser: !!user.Followers.length,
     };
     console.log(data);
-    
-    return Response.json(data,{status:200});
+
+    return Response.json(data, { status: 200 });
   } catch (error) {
     console.log(error);
     return Response.json({ error: "Internal Server Error" }, { status: 500 });
@@ -68,19 +68,28 @@ export async function POST(
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
     const { userId } = await context.params;
-    await prisma.follow.upsert({
-      where: {
-        followerId_followingId: {
+    await prisma.$transaction([
+      prisma.follow.upsert({
+        where: {
+          followerId_followingId: {
+            followerId: loggedInUser.id,
+            followingId: userId,
+          },
+        },
+        create: {
           followerId: loggedInUser.id,
           followingId: userId,
         },
-      },
-      create: {
-        followerId: loggedInUser.id,
-        followingId: userId,
-      },
-      update: {},
-    });
+        update: {},
+      }),
+      prisma.notification.create({
+        data: {
+          issuerId: loggedInUser.id,
+          recipientId: userId,
+          type: 'FOLLOW'
+        }
+      })
+    ])
     return new Response();
   } catch (error) {
     console.log(error);
@@ -97,12 +106,21 @@ export async function DELETE(
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
     const { userId } = await context.params;
-    await prisma.follow.deleteMany({
-      where: {
-        followerId: loggedInUser.id,
-        followingId: userId,
-      },
-    });
+    await prisma.$transaction([
+      prisma.follow.deleteMany({
+        where: {
+          followerId: loggedInUser.id,
+          followingId: userId,
+        },
+      }),
+      prisma.notification.deleteMany({
+        where: {
+          issuerId: loggedInUser.id,
+          recipientId: userId,
+          type: 'FOLLOW'
+        }
+      })
+    ])
     return new Response();
   } catch (error) {
     console.log(error);

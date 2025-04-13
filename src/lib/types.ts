@@ -67,7 +67,7 @@ export function getPostDataInclude(loggedInUserId: string) {
     _count: {
       select: {
         likes: true,
-        Comment:true
+        Comment: true
       }
     }
   } satisfies Prisma.PostInclude;
@@ -117,4 +117,30 @@ export interface LikeInfoType {
 }
 export interface BookmarkInfoType {
   isBookmarkByUser: boolean;
+}
+
+export const notificationsInclude = {
+  issuer: {
+    select: {
+      username: true,
+      displayName: true,
+      avatarUrl: true,
+    },
+
+  },
+  post: {
+    select: {
+      content: true
+    }
+  }
+
+} satisfies Prisma.NotificationInclude
+
+export type NotificationData = Prisma.NotificationGetPayload<{
+  include: typeof notificationsInclude
+}>
+
+export interface NotificationPage {
+  notifications: NotificationData[];
+  nextCursor: string | null
 }

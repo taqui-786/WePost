@@ -27,7 +27,7 @@ function CommentInput({post}:CommentInputProps) {
     <Input placeholder='Write a comment...' value={input} onChange={(e) => setInput(e.target.value)} autoFocus />
     <Button type='submit' variant="ghost" size="icon" disabled={!input.trim() || mutation.isPending}>
         {!mutation.isPending ? (
-            <SendHorizonal />
+            <SendHorizonal className='size-5' />
         ): (
             <Loader2 className='animate-spin' />
         )}

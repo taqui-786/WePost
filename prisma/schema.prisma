@@ -17,22 +17,24 @@ datasource db {
 }
 
 model User {
-  id           String     @id
-  username     String     @unique
-  displayName  String
-  email        String?    @unique
-  passwordHash String?
-  googleId     String?    @unique
-  avatarUrl    String?
-  bio          String?
-  session      Session[]
-  like         Like[]
-  bookmarks    Bookmark[]
-  posts        Post[]
-  Following    Follow[]   @relation("Following")
-  Followers    Follow[]   @relation("Followers")
-  createdAt    DateTime   @default(now())
-  Comment      Comment[]
+  id                    String         @id
+  username              String         @unique
+  displayName           String
+  email                 String?        @unique
+  passwordHash          String?
+  googleId              String?        @unique
+  avatarUrl             String?
+  bio                   String?
+  session               Session[]
+  like                  Like[]
+  bookmarks             Bookmark[]
+  posts                 Post[]
+  Following             Follow[]       @relation("Following")
+  Followers             Follow[]       @relation("Followers")
+  createdAt             DateTime       @default(now())
+  Comment               Comment[]
+  receivedNotifications Notification[] @relation("Recipient")
+  issuedNotifications   Notification[] @relation("Issuer")
 
   @@map("users")
 }
@@ -57,16 +59,17 @@ model Follow {
 }
 
 model Post {
-  id          String     @id @default(cuid())
-  content     String
-  userId      String
-  attachments Media[]
-  images      String[]
-  likes       Like[]
-  bookmarks   Bookmark[]
-  user        User       @relation(references: [id], fields: [userId], onDelete: Cascade)
-  createdAt   DateTime   @default(now())
-  Comment     Comment[]
+  id           String         @id @default(cuid())
+  content      String
+  userId       String
+  attachments  Media[]
+  images       String[]
+  likes        Like[]
+  bookmarks    Bookmark[]
+  user         User           @relation(references: [id], fields: [userId], onDelete: Cascade)
+  createdAt    DateTime       @default(now())
+  Comment      Comment[]
+  linkedNotifications Notification[]
 
   @@map("posts")
 }
@@ -78,8 +81,8 @@ model Media {
   type   MediaType
   url    String
 
-
   createdAt DateTime @default(now())
+
   @@map("post_media")
 }
 
@@ -89,12 +92,12 @@ enum MediaType {
 }
 
 model Comment {
-  id      String @id @default(cuid())
-  content String
-  postId  String
-  post    Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
-  userId  String
-  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  content   String
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 
   @@map("comments")
@@ -122,4 +125,25 @@ model Bookmark {
 
   @@unique([userId, postId])
   @@map("bookmarks")
+}
+
+model Notification {
+  id          String           @id @default(cuid())
+  recipientId String
+  recipient   User             @relation("Recipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  issuerId    String
+  issuer      User             @relation("Issuer", fields: [issuerId], references: [id], onDelete: Cascade)
+  postId      String?
+  post        Post?             @relation(fields: [postId], references: [id], onDelete: Cascade)
+  type        NotificationType
+  read        Boolean          @default(false)
+  createdAt   DateTime         @default(now())
+
+  @@map("notifications")
+}
+
+enum NotificationType {
+  LIKE
+  FOLLOW
+  COMMENT
 }
