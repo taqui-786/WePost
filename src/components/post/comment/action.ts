@@ -9,8 +9,8 @@ export async function submitComment({ post, content }: { post: PostData, content
     const { user } = await validateRequest()
     if (!user) throw new Error("Unauthorized")
     const { content: contentValidated } = createCommentSchema.parse({ content })
-   const [newComment] =  await prisma.$transaction([
-         prisma.comment.create({
+    const [newComment] = await prisma.$transaction([
+        prisma.comment.create({
             data: {
                 content: contentValidated,
                 postId: post.id,
@@ -48,4 +48,16 @@ export async function deleteComment(commentId: string) {
 
     })
     return deletedComment;
+}
+
+export async function notificationInitialState() {
+    const { user } = await validateRequest()
+    if (!user) throw new Error("Unauthorized")
+    const unreadNotifications = await prisma.notification.count({
+        where: {
+            recipientId: user.id,
+            read: false
+        }
+    })
+    return unreadNotifications
 }
