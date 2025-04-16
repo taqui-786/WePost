@@ -6,6 +6,8 @@ import Post from "../post/Post";
 import kyInstance from "@/lib/ky";
 import InfiniteScrollingContainer from "./InfiniteScrollingContainer";
 import PostsLoadingSkeleton from "../post/PostLoadingSkeleton";
+import { Card, CardContent } from "../ui/card";
+import { Pin } from "lucide-react";
 
 function BookmarkFeed() {
   const {
@@ -48,9 +50,19 @@ function BookmarkFeed() {
         <Post key={post.id} post={post} />
       ))}
       {isFetchingNextPage && <PostsLoadingSkeleton />}
-      {!hasNextPage && !posts.length && (
-        <p className="text-primary text-center">This User do not have any posts bookmarked.</p>
-      )}
+      {!hasNextPage && !posts.length  ? (
+        <Card className="w-full border-none bg-transparent shadow-none">
+          <CardContent className="flex flex-col items-center justify-center p-6 py-8 text-center">
+            <div className="bg-muted mb-3 flex h-12 w-12 items-center justify-center rounded-full">
+              <Pin className="text-muted-foreground h-6 w-6" />
+            </div>
+            <h4 className="mb-1 text-base font-medium">No Bookmarked Posts!</h4>
+            <p className="text-muted-foreground mb-4 text-sm">
+             You do not have any post bookmarked yet.
+            </p>
+          </CardContent>
+        </Card>
+      ) : ""}
     </InfiniteScrollingContainer>
   );
 }

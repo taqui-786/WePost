@@ -5,7 +5,7 @@ import type React from "react";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { AtSign, Loader2, LockIcon} from "lucide-react";
+import { AtSign, Loader2, LockIcon } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -51,7 +51,7 @@ export function LoginAuthForm() {
               >
                 Username
               </label>
-              <div className="relative">
+              <div className="relative flex items-center justify-center">
                 <AtSign className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-500" />
 
                 <FormControl>
@@ -64,8 +64,8 @@ export function LoginAuthForm() {
                     {...field}
                   />
                 </FormControl>
-                <FormMessage />
               </div>
+              <FormMessage className="text-red-500" />
             </FormItem>
           )}
         />
@@ -90,8 +90,8 @@ export function LoginAuthForm() {
                     {...field}
                   />
                 </FormControl>
-                <FormMessage />
               </div>
+              <FormMessage className="text-red-500" />
             </FormItem>
           )}
         />
@@ -99,7 +99,7 @@ export function LoginAuthForm() {
         <Button
           type="submit"
           disabled={isPending}
-          className="h-12 w-full bg-black text-base font-medium text-white transition-colors hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+          className="h-12 w-full text-base font-medium transition-colors hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
         >
           {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {isPending ? "logging in..." : "Log in"}

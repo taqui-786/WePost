@@ -4,18 +4,17 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Loader2 } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 export function SocialLogin() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
-
+  const router = useRouter()
   async function handleGoogleSignIn() {
     setIsGoogleLoading(true)
     try {
-      /**
-       * To update with your actual authentication logic
-       */
+    
       await new Promise((resolve) => setTimeout(resolve, 1500))
-      console.log("Signing in with Google")
+      router.push('/login/google')
     } catch (error) {
       console.error("Google sign-in error:", error)
     } finally {

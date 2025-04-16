@@ -65,8 +65,8 @@ export function SignupAuthForm() {
                     {...field}
                   />
                 </FormControl>
-                <FormMessage />
               </div>
+                <FormMessage className="text-red-500" />
             </FormItem>
           )}
         />
@@ -95,8 +95,8 @@ export function SignupAuthForm() {
                     {...field}
                   />
                 </FormControl>
-                <FormMessage />
-              </div>
+                </div>
+                <FormMessage className="text-red-500" />
             </FormItem>
           )}
         />
@@ -121,8 +121,8 @@ export function SignupAuthForm() {
                     {...field}
                   />
                 </FormControl>
-                <FormMessage />
-              </div>
+                </div>
+                <FormMessage className="text-red-500" />
             </FormItem>
           )}
         />
