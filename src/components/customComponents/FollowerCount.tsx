@@ -10,7 +10,6 @@ interface FollowerCountProps {
 
 export function FollowerCount({ userId, initialState }: FollowerCountProps) {
   const { data } = useFollowInfo(userId, initialState);
-console.log({data});
 
   return (
     <div className="flex gap-2">

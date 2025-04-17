@@ -28,11 +28,9 @@ function NotificationBtn({
     refetchInterval: 60 * 1000,
   });
   return (
-    <div>
-      {" "}
       <Button
         className={cn(
-          "flex items-center justify-start gap-3",
+          "flex items-center justify-start gap-3 px-[10px]",
           router === "/notifications" && activeLinkStyle,
         )}
         variant="ghost"
@@ -52,7 +50,6 @@ function NotificationBtn({
         <span className="hidden lg:inline">Notifications</span>
       </Link>
       </Button>
-    </div>
   );
 }
 
