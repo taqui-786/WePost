@@ -1,4 +1,5 @@
 import { validateRequest } from '@/auth';
+import HashtagsFeed from '@/components/customComponents/feeds/TagsFeed';
 import TrendzSidebar from '@/components/customComponents/TrendzSidebar';
 import React from 'react'
 
@@ -28,7 +29,7 @@ async function page({params}:PageProps) {
            #{hashtag} posts
           </h2>
         </div>
-        {/* <ProfileFeed userId={user.id} /> */}
+        <HashtagsFeed hashtag={hashtag} />
       </div>
       <TrendzSidebar />
     </main>

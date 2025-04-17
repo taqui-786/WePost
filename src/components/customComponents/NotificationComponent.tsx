@@ -20,12 +20,12 @@ function NotificationComponent({notification}:NotificationComponentProps) {
         COMMENT:{
             message: `${notification.issuer.displayName} commented on your post.`,
             icon: <MessageCircle className='size-7 text-primary fill-primary' />,
-            href: `/users/${notification.postId}`
+            href: `/posts/${notification.postId}`
         },
         LIKE:{
             message: `${notification.issuer.displayName} liked your post.`,
             icon: <Heart className='size-7 text-red-500 fill-red-500' />,
-            href: `/users/${notification.postId}`
+            href: `/posts/${notification.postId}`
         }
     }
     const {message, icon,href} = notificationTypeMap[notification.type]
