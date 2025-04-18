@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 
 function page() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-white p-4 dark:bg-black">
+    <div className="flex min-h-dvh items-center justify-center bg-white p-4 dark:bg-black">
       <div className="w-full max-w-[450px]">
         <div className="relative mb-4 h-48 w-full">
           <Image
