@@ -5,15 +5,17 @@ import React from 'react'
 
 
 interface PageProps {
-    searchParams:{q:string}
+    searchParams:Promise<{q:string}>
 }
-export function generateMetadata({searchParams:{q}}:PageProps):Metadata{
+export async function generateMetadata({searchParams}:PageProps):Promise<Metadata>{
+  const {q} = await searchParams
     return {
         title: `search results for "${q}"`
     }
 
 }
-function page({searchParams:{q}}:PageProps) {
+async function page({searchParams}:PageProps) {
+  const {q} = await searchParams
   return (
     <main className="flex w-full min-w-0 gap-5">
     <div className="w-full min-w-0 space-y-5">
