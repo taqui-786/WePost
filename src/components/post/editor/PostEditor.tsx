@@ -92,7 +92,7 @@ function PostEditor() {
 
   return (
     <Card>
-      <CardContent>
+      <CardContent className="p-6">
         <div className="flex">
           <EditorContent
             editor={editor}

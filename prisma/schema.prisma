@@ -35,6 +35,8 @@ model User {
   Comment               Comment[]
   receivedNotifications Notification[] @relation("Recipient")
   issuedNotifications   Notification[] @relation("Issuer")
+  Participant           Participant[]
+  Message               Message[]
 
   @@map("users")
 }
@@ -59,16 +61,16 @@ model Follow {
 }
 
 model Post {
-  id           String         @id @default(cuid())
-  content      String
-  userId       String
-  attachments  Media[]
-  images       String[]
-  likes        Like[]
-  bookmarks    Bookmark[]
-  user         User           @relation(references: [id], fields: [userId], onDelete: Cascade)
-  createdAt    DateTime       @default(now())
-  Comment      Comment[]
+  id                  String         @id @default(cuid())
+  content             String
+  userId              String
+  attachments         Media[]
+  images              String[]
+  likes               Like[]
+  bookmarks           Bookmark[]
+  user                User           @relation(references: [id], fields: [userId], onDelete: Cascade)
+  createdAt           DateTime       @default(now())
+  Comment             Comment[]
   linkedNotifications Notification[]
 
   @@map("posts")
@@ -134,7 +136,7 @@ model Notification {
   issuerId    String
   issuer      User             @relation("Issuer", fields: [issuerId], references: [id], onDelete: Cascade)
   postId      String?
-  post        Post?             @relation(fields: [postId], references: [id], onDelete: Cascade)
+  post        Post?            @relation(fields: [postId], references: [id], onDelete: Cascade)
   type        NotificationType
   read        Boolean          @default(false)
   createdAt   DateTime         @default(now())
@@ -142,8 +144,48 @@ model Notification {
   @@map("notifications")
 }
 
+model Conversation {
+  id           String        @id @default(cuid())
+  participants Participant[]
+  messages     Message[]
+  createdAt    DateTime      @default(now())
+
+  @@map("conversations")
+}
+
+model Participant {
+  id             String       @id @default(cuid())
+  conversationId String
+  userId         String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, userId])
+  @@map("participants")
+}
+
+model Message {
+  id             String        @id @default(cuid())
+  conversationId String
+  senderId       String
+  content        String
+  status         MessageStatus @default(SENT)
+  createdAt      DateTime      @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+}
+
 enum NotificationType {
   LIKE
   FOLLOW
   COMMENT
+}
+
+enum MessageStatus {
+  SENT
+  DELIVERED
+  READ
 }

@@ -36,8 +36,8 @@ function MenuBar({ className }: MenuBarProps) {
   }, []);
 
   return (
-    <Card className={cn(className, "rounded-none sm:rounded-2xl")}>
-      <CardContent className="flex justify-between px-6 sm:block sm:space-y-3">
+    <Card className={cn(className, "  rounded-none sm:rounded-2xl")}>
+      <CardContent className="flex justify-between p-0 w-full  sm:p-6 sm:block sm:space-y-3">
         <Button
           className={cn(
             "flex items-center justify-start gap-3",

@@ -31,8 +31,8 @@ function Post({ post }: { post: PostData }) {
     }
   }, [post.content]);
   return (
-    <Card className="group py-4">
-      <CardContent>
+    <Card className="group ">
+      <CardContent className="p-6">
         <article>
           <div className="flex justify-between gap-3">
             <div className="flex flex-wrap gap-3">
