@@ -6,7 +6,7 @@ import { Bookmark, Home, Mail } from "lucide-react";
 import { Card, CardContent } from "./ui/card";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import NotificationBtn from "./customComponents/NotificationBtn";
+import NotificationBtn from "./customComponents/actionButtons/NotificationBtn";
 import { notificationInitialState } from "./post/comment/action";
 
 interface MenuBarProps {

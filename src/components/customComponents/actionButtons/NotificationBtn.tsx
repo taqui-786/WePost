@@ -1,6 +1,6 @@
 'use client'
 import React from "react";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Bell } from "lucide-react";

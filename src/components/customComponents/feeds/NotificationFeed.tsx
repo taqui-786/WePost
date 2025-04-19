@@ -3,11 +3,11 @@ import { NotificationPage } from "@/lib/types";
 import { QueryClient, useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import React, { useEffect } from "react";
 import kyInstance from "@/lib/ky";
-import InfiniteScrollingContainer from "./InfiniteScrollingContainer";
-import PostsLoadingSkeleton from "../post/PostLoadingSkeleton";
-import { Card, CardContent } from "../ui/card";
+import InfiniteScrollingContainer from "../InfiniteScrollingContainer";
+import PostsLoadingSkeleton from "../../post/PostLoadingSkeleton";
+import { Card, CardContent } from "../../ui/card";
 import { Bell } from "lucide-react";
-import NotificationComponent from "./NotificationComponent";
+import NotificationComponent from "../NotificationComponent";
 
 function NotificationFeed() {
   const {

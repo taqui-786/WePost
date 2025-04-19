@@ -1,5 +1,5 @@
 import { validateRequest } from '@/auth';
-import NotificationFeed from '@/components/customComponents/NotificationFeed';
+import NotificationFeed from '@/components/customComponents/feeds/NotificationFeed';
 import TrendzSidebar from '@/components/customComponents/TrendzSidebar';
 import React from 'react'
 

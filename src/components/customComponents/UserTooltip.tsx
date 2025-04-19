@@ -10,7 +10,7 @@ import {
 } from "../ui/tooltip";
 import Link from "next/link";
 import UserAvatar from "./UserAvatar";
-import FollowButton from "./FollowButton";
+import FollowButton from "./actionButtons/FollowButton";
 import Linkify from "./Linkify";
 import {FollowerCount} from "./FollowerCount";
 

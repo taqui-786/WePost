@@ -1,9 +1,9 @@
 import { validateRequest } from "@/auth";
-import EditProfileDialog from "@/components/customComponents/EditProfileDialog";
-import FollowButton from "@/components/customComponents/FollowButton";
+import EditProfileDialog from "@/components/customComponents/actionButtons/EditProfileDialog";
+import FollowButton from "@/components/customComponents/actionButtons/FollowButton";
 import {FollowerCount} from "@/components/customComponents/FollowerCount";
 import Linkify from "@/components/customComponents/Linkify";
-import ProfileFeed from "@/components/customComponents/ProfileFeed";
+import ProfileFeed from "@/components/customComponents/feeds/ProfileFeed";
 import TrendzSidebar, {
   formatNumber,
 } from "@/components/customComponents/TrendzSidebar";

@@ -1,5 +1,5 @@
-import FollowingFeed from "@/components/customComponents/FollowingFeed";
-import MyFeed from "@/components/customComponents/MyFeed";
+import FollowingFeed from "@/components/customComponents/feeds/FollowingFeed";
+import MyFeed from "@/components/customComponents/feeds/MyFeed";
 import TrendzSidebar from "@/components/customComponents/TrendzSidebar";
 import PostEditor from "@/components/post/editor/PostEditor";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";

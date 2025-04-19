@@ -2,16 +2,14 @@
 import { PostPage } from "@/lib/types";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import React from "react";
-import Post from "../post/Post";
+import Post from "../../post/Post";
 import kyInstance from "@/lib/ky";
-import InfiniteScrollingContainer from "./InfiniteScrollingContainer";
-import PostsLoadingSkeleton from "../post/PostLoadingSkeleton";
-import { Card, CardContent } from "../ui/card";
-import { User } from "lucide-react";
-interface ProfileFeedProps{
-    userId:string
-}
-function ProfileFeed({userId}:ProfileFeedProps) {
+import InfiniteScrollingContainer from "../InfiniteScrollingContainer";
+import PostsLoadingSkeleton from "../../post/PostLoadingSkeleton";
+import { Card, CardContent } from "../../ui/card";
+import { Pin } from "lucide-react";
+
+function BookmarkFeed() {
   const {
     data,
     fetchNextPage,
@@ -20,11 +18,11 @@ function ProfileFeed({userId}:ProfileFeedProps) {
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
-    queryKey: ["post-feed", "user-posts", userId],
+    queryKey: [ "post-feed","bookmarks"],
     queryFn: ({ pageParam }) =>
       kyInstance
         .get(
-          `/api/users/${userId}/posts`,
+          `/api/posts/bookmarked`,
           pageParam ? { searchParams: { cursor: pageParam } } : {},
         )
         .json<PostPage>(),
@@ -52,18 +50,15 @@ function ProfileFeed({userId}:ProfileFeedProps) {
         <Post key={post.id} post={post} />
       ))}
       {isFetchingNextPage && <PostsLoadingSkeleton />}
-      {!hasNextPage && posts.length ?  <p className="text-primary text-center">
-        Now you have reached to an end.
-      </p> : ""}
-      {!hasNextPage && !posts.length ? (
+      {!hasNextPage && !posts.length  ? (
         <Card className="w-full border-none bg-transparent shadow-none">
           <CardContent className="flex flex-col items-center justify-center p-6 py-8 text-center">
             <div className="bg-muted mb-3 flex h-12 w-12 items-center justify-center rounded-full">
-              <User className="text-muted-foreground h-6 w-6" />
+              <Pin className="text-muted-foreground h-6 w-6" />
             </div>
-            <h4 className="mb-1 text-base font-medium">Your profile is empty</h4>
+            <h4 className="mb-1 text-base font-medium">No Bookmarked Posts!</h4>
             <p className="text-muted-foreground mb-4 text-sm">
-             This user do not have any post yet. Checkout another one!
+             You do not have any post bookmarked yet.
             </p>
           </CardContent>
         </Card>
@@ -72,4 +67,4 @@ function ProfileFeed({userId}:ProfileFeedProps) {
   );
 }
 
-export default ProfileFeed;
+export default BookmarkFeed;

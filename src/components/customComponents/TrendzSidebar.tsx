@@ -6,7 +6,7 @@ import Link from "next/link";
 import React, { Suspense } from "react";
 import UserAvatar from "./UserAvatar";
 import { unstable_cache } from "next/cache";
-import FollowButton from "./FollowButton";
+import FollowButton from "./actionButtons/FollowButton";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import UserTooltip from "./UserTooltip";
 import { TrendingTopicsLoadingSkeleton, WhoToFollowLoadingSkeleton } from "../skeletons/TrendzSidebarSkeleton";

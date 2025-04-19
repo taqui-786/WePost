@@ -11,7 +11,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "../ui/dialog";
+} from "../../ui/dialog";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import kyInstance from "@/lib/ky";

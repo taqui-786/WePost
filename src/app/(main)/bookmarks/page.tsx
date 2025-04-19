@@ -1,5 +1,5 @@
 import { validateRequest } from '@/auth';
-import BookmarkFeed from '@/components/customComponents/BookmarkFeed';
+import BookmarkFeed from '@/components/customComponents/feeds/BookmarkFeed';
 import TrendzSidebar from '@/components/customComponents/TrendzSidebar';
 import React from 'react'
 

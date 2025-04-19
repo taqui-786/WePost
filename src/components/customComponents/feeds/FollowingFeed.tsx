@@ -2,11 +2,11 @@
 import { PostPage } from "@/lib/types";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import React from "react";
-import Post from "../post/Post";
+import Post from "../../post/Post";
 import kyInstance from "@/lib/ky";
-import InfiniteScrollingContainer from "./InfiniteScrollingContainer";
-import PostsLoadingSkeleton from "../post/PostLoadingSkeleton";
-import { Card, CardContent } from "../ui/card";
+import InfiniteScrollingContainer from "../InfiniteScrollingContainer";
+import PostsLoadingSkeleton from "../../post/PostLoadingSkeleton";
+import { Card, CardContent } from "../../ui/card";
 import { User } from "lucide-react";
 
 function FollowingFeed() {

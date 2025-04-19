@@ -3,7 +3,7 @@ import { useFollowInfo } from "@/hooks/useFollowInfo";
 import { FollowersInfo } from "@/lib/types";
 import { QueryKey, useMutation, useQueryClient } from "@tanstack/react-query";
 import React from "react";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import kyInstance from "@/lib/ky";
 import { toast } from "sonner";
 interface FollowButtonProps {

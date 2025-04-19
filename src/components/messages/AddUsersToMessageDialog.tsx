@@ -66,7 +66,7 @@ function AddUsersToMessageDialog({ userId }: { userId: string | undefined }) {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Select User</DialogTitle>
+          <DialogTitle>Select User To Chat.</DialogTitle>
         </DialogHeader>
         <div className="flex w-full flex-col">
           <div className="p-2">
@@ -124,7 +124,7 @@ function AddUsersToMessageDialog({ userId }: { userId: string | undefined }) {
                   </span>
                 </div>
                 </div>
-                <Button size="sm" >Add</Button>
+                <Button size="sm" >Chat</Button>
               </div>
             ))}
             {isFetchingNextPage && <UserCardSkeleton />}

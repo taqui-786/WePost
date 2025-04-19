@@ -10,7 +10,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import React, { cache, Suspense } from 'react'
 import Linkify from '@/components/customComponents/Linkify';
-import FollowButton from '@/components/customComponents/FollowButton';
+import FollowButton from '@/components/customComponents/actionButtons/FollowButton';
 interface PageProps {
   params: Promise<{ postId: string }>;
 }
