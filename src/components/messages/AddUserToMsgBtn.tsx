@@ -5,18 +5,20 @@ import { toast } from "sonner";
 import { createUserChat } from "./action";
 import { UserData } from "@/lib/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 
-function AddUserToMsgBtn({ friend }: { friend: UserData }) {
+function AddUserToMsgBtn({ friend, onClose }: { friend: UserData, onClose: () => void }) {
   const queryClient = useQueryClient()
-  const router = useRouter()
+//   const router = useRouter()
   const {mutate, isPending} =  useMutation({
     mutationFn: () => createUserChat(friend.id),
     onSuccess: async (_, friendId) => {
       // Invalidate any cache related to conversations
       await queryClient.invalidateQueries({ queryKey: ['chat-users'] })
-
+        console.log(friendId);
+        
       toast.success("Chat created successfully!")
+      onClose()
     //   router.push(`/chat/${friendId}`) // redirect if you have chat page
     },
     onError: (error) => {

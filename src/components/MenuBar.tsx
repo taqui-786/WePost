@@ -60,7 +60,7 @@ function MenuBar({ className }: MenuBarProps) {
         <Button
           className={cn(
             "flex items-center justify-start gap-3",
-            router === "/messages" && activeLinkStyle,
+            router.startsWith('/messages') && activeLinkStyle,
           )}
           variant="ghost"
           title="Messages"

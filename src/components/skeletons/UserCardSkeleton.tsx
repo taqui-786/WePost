@@ -1,6 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton"
 
-const UserCardSkeleton = () => {
+const UserCardSkeleton = ({withBtn=true}:{withBtn?:boolean}) => {
   return (
     <div className="flex items-center justify-between w-full">
       <div className="flex flex-wrap items-center gap-3">
@@ -15,7 +15,10 @@ const UserCardSkeleton = () => {
       </div>
 
       {/* Add Button Skeleton */}
+      {
+        withBtn &&
       <Skeleton className="h-8 w-16 rounded-md" />
+      }
     </div>
   )
 }

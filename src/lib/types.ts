@@ -153,7 +153,7 @@ export interface notificationCountInfo {
   unreadcount: number
 }
 
-export interface messageParticipantType { id: string, participants: UserData[] }
+export interface messageParticipantType { id: string, participants: messageConversationType[] }
 export interface messageConversationType {
   id: string,
 conversationId: string,

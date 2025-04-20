@@ -43,6 +43,19 @@ export async function GET(req: NextRequest) {
             },
 
           ],
+          NOT:{
+            Participant:{
+              some:{
+                conversation:{
+                  participants:{
+                    some:{
+                      userId:user.id
+                    }
+                  }
+                }
+              }
+            }
+          }
         },
         select: {
           id: true,
@@ -81,6 +94,21 @@ export async function GET(req: NextRequest) {
       });
     } else {
       users = await prisma.user.findMany({
+        where:{
+          NOT:{
+            Participant:{
+              some:{
+                conversation:{
+                  participants:{
+                    some:{
+                      userId:user.id
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
         select: {
           id: true,
           username: true,

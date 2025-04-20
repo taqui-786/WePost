@@ -1,5 +1,6 @@
 import { validateRequest } from "@/auth";
 import prisma from "@/lib/prisma";
+import { getUserDataSelect } from "@/lib/types";
 
 export async function GET() {
     try {
@@ -18,7 +19,9 @@ export async function GET() {
             include: {
               participants: {
                 include: {
-                  user: true,
+                  user: {
+                    select: getUserDataSelect(user.id)
+                  },
                 },
               },
             },

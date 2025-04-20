@@ -125,7 +125,7 @@ function AddUsersToMessageDialog({ userId }: { userId: string | undefined }) {
                   </span>
                 </div>
                 </div>
-                <AddUserToMsgBtn friend={user}/>
+                <AddUserToMsgBtn friend={user} onClose={() => setOpen(false)}/>
               </div>
             ))}
             {isFetchingNextPage && <UserCardSkeleton />}
