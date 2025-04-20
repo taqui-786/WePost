@@ -1,5 +1,6 @@
 import React from "react";
 import AddUsersToMessageDialog from "./AddUsersToMessageDialog";
+import MessageUsersFeed from "../customComponents/feeds/MessageUsersFeed";
 
 function Users({ userId }: { userId: string | undefined }) {
   return (
@@ -10,6 +11,7 @@ function Users({ userId }: { userId: string | undefined }) {
         </h1>
         <AddUsersToMessageDialog userId={userId} />
       </div>
+        <MessageUsersFeed  userId={userId}/>
     </div>
   );
 }

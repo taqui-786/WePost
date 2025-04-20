@@ -149,6 +149,14 @@ export interface NotificationPage {
   nextCursor: string | null
 }
 
-export interface notificationCountInfo{
-  unreadcount:number
+export interface notificationCountInfo {
+  unreadcount: number
+}
+
+export interface messageParticipantType { id: string, participants: UserData[] }
+export interface messageConversationType {
+  id: string,
+conversationId: string,
+  userId: string,
+  user: UserData
 }

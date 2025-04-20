@@ -20,6 +20,7 @@ import UserAvatar from "../customComponents/UserAvatar";
 import { useDebounce } from "@/hooks/useDebounce";
 import UserCardSkeleton from "../skeletons/UserCardSkeleton";
 import { Card, CardContent } from "../ui/card";
+import AddUserToMsgBtn from "./AddUserToMsgBtn";
 
 function AddUsersToMessageDialog({ userId }: { userId: string | undefined }) {
   const [query, setQuery] = useState<string>("");
@@ -124,7 +125,7 @@ function AddUsersToMessageDialog({ userId }: { userId: string | undefined }) {
                   </span>
                 </div>
                 </div>
-                <Button size="sm" >Chat</Button>
+                <AddUserToMsgBtn friend={user}/>
               </div>
             ))}
             {isFetchingNextPage && <UserCardSkeleton />}
