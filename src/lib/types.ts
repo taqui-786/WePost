@@ -156,7 +156,39 @@ export interface notificationCountInfo {
 export interface messageParticipantType { id: string, participants: messageConversationType[] }
 export interface messageConversationType {
   id: string,
-conversationId: string,
+  conversationId: string,
   userId: string,
   user: UserData
+}
+
+
+export interface UserMessages {
+  id: string
+  conversationId: string
+  senderId: string
+  content: string
+  status: string
+  createdAt: string
+
+  conversation?: messageConversationType
+  sender: UserData
+
+
+}
+export function getMessageDataInclude(loggedInUserId: string) {
+  return {
+  
+    sender: {
+      select: getUserDataSelect(loggedInUserId)
+    },
+    
+  } satisfies Prisma.MessageInclude
+}
+export type messageData = Prisma.MessageGetPayload<{
+  include: ReturnType<typeof getMessageDataInclude>;
+}>
+
+export interface MessagePage {
+  messages: messageData[];
+  previousCursor: string | null;
 }

@@ -1,7 +1,14 @@
 import { validateRequest } from '@/auth';
 import BookmarkFeed from '@/components/customComponents/feeds/BookmarkFeed';
 import TrendzSidebar from '@/components/customComponents/TrendzSidebar';
+import { Metadata } from 'next';
 import React from 'react'
+
+
+export const metadata: Metadata = {
+  title: "Bookmarks",
+  description:"All the saved/Bookmarked posts will be shown here."
+}
 
 async function page() {
   const { user: loggedInUser } = await validateRequest();
@@ -13,7 +20,8 @@ async function page() {
     );
   }
 
-  return (
+
+    return (
     <main className="flex w-full min-w-0 gap-5">
       <div className="w-full min-w-0 space-y-5">
         <div className="bg-card rounded-2xl p-5 shadow-sm">

@@ -109,6 +109,7 @@ function Post({ post }: { post: PostData }) {
             <div className="flex items-center gap-5">
               <LikeButton
                 postId={post.id}
+                username={post.user.username}
                 initialState={{
                   likes: post._count.likes,
                   isLikedByUser: !!post.likes.some(

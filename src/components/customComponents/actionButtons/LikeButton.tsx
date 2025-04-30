@@ -6,12 +6,15 @@ import { QueryKey, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useSocket } from "@/hooks/SocketContext";
 
 interface LikeButtonProps {
     postId: string;
     initialState: LikeInfoType;
+    username:string
 }
-function LikeButton({ initialState, postId }: LikeButtonProps) {
+function LikeButton({ initialState, postId, username }: LikeButtonProps) {
+    const { socket } = useSocket();
     const { data } = useLikeInfo(postId, initialState)
     const queryClient = useQueryClient();
     const queryKey: QueryKey = ["like-info", postId];
@@ -24,6 +27,9 @@ function LikeButton({ initialState, postId }: LikeButtonProps) {
                 likes: (previousState?.likes || 0) + (previousState?.isLikedByUser ? -1 : 1),
                 isLikedByUser: !previousState?.isLikedByUser
             }));
+            if(!previousState?.isLikedByUser){
+                socket?.emit("post-liked",{postUsername:username,postId})
+            }
             return { previousState };
         },
         onError(error, variables, context){

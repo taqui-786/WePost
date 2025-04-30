@@ -10,6 +10,13 @@ interface PageProps {
 }
 
 
+export  async function generateMetadata({params}:PageProps){
+  const {hashtag} = await params
+  return {
+    title: `#${hashtag}`,
+  };
+}
+
 async function page({params}:PageProps) {
   const { user: loggedInUser } = await validateRequest();
   if (!loggedInUser) {

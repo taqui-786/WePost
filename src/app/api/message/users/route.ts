@@ -6,7 +6,7 @@ export async function GET() {
     try {
         const { user } = await validateRequest();
         if (!user) {
-            return Response.json({ error: "Uauthorized" }, { status: 401 });
+            return Response.json({ error: "Unauthorized" }, { status: 401 });
         }
         const data = await prisma.conversation.findMany({
             where: {

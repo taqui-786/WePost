@@ -4,7 +4,14 @@ import React from "react";
 import SessionProvider from "./SessionProvider";
 import Navbar from "./Navbar";
 import MenuBar from "@/components/MenuBar";
-
+import { SocketProvider } from "@/hooks/SocketContext";
+import { Metadata } from "next";
+export const metadata: Metadata = {
+  title: {
+    default: "WePost",
+    template: `WePost | %s`,
+  },
+}
 export default async function Layout({
   children,
 }: {
@@ -15,6 +22,8 @@ export default async function Layout({
 
   return (
     <SessionProvider value={session}>
+       <SocketProvider>
+
       <div className="flex min-h-dvh flex-col bg-background">
         <Navbar />
         <div className="mx-auto flex w-full max-w-7xl grow gap-5 p-5">
@@ -23,6 +32,7 @@ export default async function Layout({
         </div>
         <MenuBar className="sticky bottom-0 flex w-full justify-center gap-5 border-t bg-card py-2 sm:hidden" />
       </div>
+       </SocketProvider>
     </SessionProvider>
   );
 }

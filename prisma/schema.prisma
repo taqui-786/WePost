@@ -37,6 +37,7 @@ model User {
   issuedNotifications   Notification[] @relation("Issuer")
   Participant           Participant[]
   Message               Message[]
+  Conversation          Conversation[]
 
   @@map("users")
 }
@@ -145,10 +146,12 @@ model Notification {
 }
 
 model Conversation {
-  id           String        @id @default(cuid())
-  participants Participant[]
-  messages     Message[]
-  createdAt    DateTime      @default(now())
+  id            String        @id @default(cuid())
+  createdById   String
+  createdByUser User          @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  participants  Participant[]
+  messages      Message[]
+  createdAt     DateTime      @default(now())
 
   @@map("conversations")
 }

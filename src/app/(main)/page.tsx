@@ -27,6 +27,7 @@ export default function Home() {
           </TabsContent>
         </Tabs>
       </div>
+      
       <TrendzSidebar />
     </main>
   );

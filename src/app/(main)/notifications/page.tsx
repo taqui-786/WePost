@@ -1,8 +1,11 @@
-import { validateRequest } from '@/auth';
-import NotificationFeed from '@/components/customComponents/feeds/NotificationFeed';
-import TrendzSidebar from '@/components/customComponents/TrendzSidebar';
-import React from 'react'
-
+import { validateRequest } from "@/auth";
+import NotificationFeed from "@/components/customComponents/feeds/NotificationFeed";
+import TrendzSidebar from "@/components/customComponents/TrendzSidebar";
+import { Metadata } from "next";
+import React from "react";
+export const metadata: Metadata = {
+  title: "Notifications",
+};
 async function page() {
   const { user: loggedInUser } = await validateRequest();
   if (!loggedInUser) {
@@ -17,15 +20,13 @@ async function page() {
     <main className="flex w-full min-w-0 gap-5">
       <div className="w-full min-w-0 space-y-5">
         <div className="bg-card rounded-2xl p-5 shadow-sm">
-          <h2 className="text-center text-2xl font-bold">
-            Notifications
-          </h2>
+          <h2 className="text-center text-2xl font-bold">Notifications</h2>
         </div>
         <NotificationFeed />
       </div>
       <TrendzSidebar />
     </main>
-  )
+  );
 }
 
-export default page
+export default page;

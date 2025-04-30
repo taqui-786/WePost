@@ -29,6 +29,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        
         <ReactQueryProvider>{children}</ReactQueryProvider>
         <Toaster richColors />
       </body>

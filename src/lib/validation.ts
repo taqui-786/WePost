@@ -46,3 +46,6 @@ export type UpdateProfileFormValues = z.infer<typeof ProfileFormSchema>;
 export const createCommentSchema = z.object({
   content: requiredString
 })
+export const createMessageSchema = z.object({
+  content: requiredString
+})
