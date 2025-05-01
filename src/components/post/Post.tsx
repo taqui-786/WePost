@@ -15,6 +15,7 @@ import BookmarkButton from "../customComponents/actionButtons/BookmarkButton";
 import { MessageSquare } from "lucide-react";
 import Comments from "./comment/Comments";
 import { usePathname } from "next/navigation";
+import { PostShareButton } from "../customComponents/actionButtons/PostShare";
 
 function Post({ post }: { post: PostData }) {
   const { user } = useSession();
@@ -56,15 +57,10 @@ function Post({ post }: { post: PostData }) {
                     {post.user.username}
                   </Link>
                 </UserTooltip>
-                <Link
-                  href={`/posts/${post.id}`}
-                  suppressHydrationWarning
-                  className="block hover:underline"
-                >
+              
                   <span className="text-muted-foreground text-xs">
                     {formatRelativeDate(post.createdAt)}
                   </span>
-                </Link>
               </div>
             </div>
             {user.id === post.user.id && (
@@ -74,6 +70,11 @@ function Post({ post }: { post: PostData }) {
               />
             )}
           </div>
+          <Link
+                  href={`/posts/${post.id}`}
+                  suppressHydrationWarning
+                  className="block hover:cursor-pointer"
+                >
           <Linkify>
             <div className="mt-2 text-sm font-normal break-words whitespace-pre-line">
               <div ref={contentRef} className={cn(pathName.startsWith('/posts') ? "" : "line-clamp-5")}>
@@ -103,7 +104,7 @@ function Post({ post }: { post: PostData }) {
             </div>
           ) : (
             ""
-          )}
+          )} </Link>
           <hr className="text-muted-foreground mt-2 w-full pb-4" />
           <div className="flex items-center">
             <div className="flex items-center gap-5">
@@ -121,6 +122,7 @@ function Post({ post }: { post: PostData }) {
                 post={post}
                 onClick={() => setShowComments(!showComments)}
               />
+              <PostShareButton postId={post.id} />
             </div>
             <BookmarkButton
               postId={post.id}

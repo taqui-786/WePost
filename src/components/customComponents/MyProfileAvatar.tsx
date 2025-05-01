@@ -11,7 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { Plus, Upload, Loader2 } from "lucide-react";
+import { Upload, Loader2, Camera } from "lucide-react";
 import { toast } from "sonner";
 import { handleAvatarUpdate } from "../profile-mutation";
 
@@ -134,7 +134,7 @@ function MyProfileAvatar({
           {isUploading ? (
             <Loader2 className="h-6 w-6 animate-spin text-white" />
           ) : (
-            <Plus className="h-6 w-6 text-white" />
+            <Camera className="h-6 w-6 text-white" />
           )}
         </button>
         </Avatar>
@@ -185,7 +185,7 @@ function MyProfileAvatar({
                   onChange={handleInputChange}
                 />
                 <Button
-                  variant="secondary"
+               
                   onClick={() => fileInputRef.current?.click()}
                 >
                   Select Image

@@ -13,7 +13,7 @@ export default async function Layout({
 if(!loggedinUser) return notFound()
   return (
     <main className="w-full flex   rounded-lg border bg-card text-card-foreground shadow-sm ">
-     <Users userId={loggedinUser.user?.id }/>
+     <Users userId={loggedinUser.user?.id } className="md:flex hidden w-1/3"/>
         {children}
     
     </main>

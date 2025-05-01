@@ -54,7 +54,7 @@ async function page({ params }: PageProps) {
   );
 
   return (
-    <div className="flex w-2/3 flex-col">
+    <div className="flex w-full md:w-2/3 flex-col">
       <MessageHeader user={headerUser[0].user} conversationId={messageId} />
       <MessagePage
         messageId={messageId}

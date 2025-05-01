@@ -1,10 +1,15 @@
+import { validateRequest } from '@/auth'
+import Users from '@/components/messages/Users'
 import { Card, CardContent } from '@/components/ui/card'
 import { Send } from 'lucide-react'
 import React from 'react'
 
 async function page() {
+  const {user} = await validateRequest()
   return (
-    <div className="w-2/3 grid place-content-center">
+    <>
+      <Users userId={user?.id } className='w-full flex md:hidden'/>
+    <div className="w-2/3 hidden md:grid place-content-center">
         <Card className="w-full border-none bg-transparent shadow-none">
           <CardContent className="flex flex-col items-center justify-center p-6 py-8 text-center">
             <div className="bg-muted mb-3 flex h-24 w-24 items-center justify-center rounded-full">
@@ -17,6 +22,7 @@ async function page() {
           </CardContent>
         </Card>
     </div>
+    </>
   )
 }
 
