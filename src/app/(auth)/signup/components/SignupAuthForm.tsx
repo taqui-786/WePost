@@ -130,7 +130,7 @@ export function SignupAuthForm() {
         <Button
           type="submit"
           disabled={isPending}
-          className="h-12 w-full bg-black text-base font-medium text-white transition-colors hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+          className="h-12 w-full "
         >
           {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {isPending ? "Signing up..." : "Sign up"}

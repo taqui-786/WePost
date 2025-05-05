@@ -49,7 +49,7 @@ export function SocialLogin() {
           <Separator className="w-full border-neutral-200 dark:border-neutral-800" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-white dark:bg-black px-2 text-neutral-600 dark:text-neutral-400">Or continue with</span>
+          <span className="bg-background dark:bg-black px-2 text-neutral-600 dark:text-neutral-400">Or </span>
         </div>
       </div>
 
@@ -60,7 +60,7 @@ export function SocialLogin() {
         className="w-full h-12 font-medium border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:bg-black dark:hover:bg-neutral-900 transition-colors"
       >
         {isGoogleLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon />}
-        {isGoogleLoading ? "Connecting..." : "Sign in with Google"}
+        {isGoogleLoading ? "Connecting..." : "Continue With Google"}
       </Button>
     </>
   )

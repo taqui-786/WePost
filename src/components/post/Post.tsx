@@ -40,6 +40,7 @@ function Post({ post }: { post: PostData }) {
               <UserTooltip user={post.user}>
                 <Link
                   href={`/users/${post.user.username}`}
+                  suppressHydrationWarning
                   className="flex items-center justify-center"
                 >
                   <UserAvatar
@@ -52,6 +53,7 @@ function Post({ post }: { post: PostData }) {
                 <UserTooltip user={post.user}>
                   <Link
                     href={`/users/${post.user.username}`}
+                    suppressHydrationWarning
                     className="block font-medium hover:underline"
                   >
                     {post.user.username}
