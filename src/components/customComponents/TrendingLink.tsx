@@ -18,7 +18,7 @@ export default function TrendingLink({ title, hashtag, count }: TrendingLinkProp
     <Link href={`/hashtag/${title}`} className="block">
       <p
         className={cn(
-          'line-clamp-1 font-semibold break-all hover:underline',
+          'line-clamp-1 text-card-foreground break-all hover:underline',
           isActive && 'text-primary'
         )}
         title={hashtag}

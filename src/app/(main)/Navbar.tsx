@@ -11,7 +11,7 @@ function Navbar() {
         <div className="flex gap-5">
 
         <div className="flex items-center justify-center gap-2">
-          <Icon className="text-primary "  />
+          <Icon className="text-primary " size={30}  />
           <Link href="/" className="text-primary text-2xl font-bold hidden sm:inline font-breeserif">
           WePost
           </Link>

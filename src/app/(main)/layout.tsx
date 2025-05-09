@@ -24,7 +24,7 @@ export default async function Layout({
     <SessionProvider value={session}>
        <SocketProvider>
 
-      <div className="flex h-dvh flex-col bg-background">
+      <div className="flex min-h-dvh h-full flex-col bg-background">
         <Navbar />
         <div className="mx-auto flex w-full max-w-7xl grow gap-5 p-5">
           <MenuBar className=" sticky top-[5.25rem] hidden h-fit flex-none  rounded-2xl   sm:block  xl:w-80" />

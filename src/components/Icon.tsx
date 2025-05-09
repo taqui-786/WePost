@@ -9,7 +9,7 @@ interface IconProps {
 const Icon: React.FC<IconProps> = ({
   size = 24,
   className = "",
-  color = "#6e56cf", // override default to match SVG fill
+  color = "#6468f0", // override default to match SVG fill
 }) => {
   const parsedSize = typeof size === "string" ? parseInt(size, 10) : size;
 

@@ -54,7 +54,7 @@ function Post({ post }: { post: PostData }) {
                   <Link
                     href={`/users/${post.user.username}`}
                     suppressHydrationWarning
-                    className="block font-medium hover:underline"
+                    className="block font-semibold hover:underline"
                   >
                     {post.user.username}
                   </Link>

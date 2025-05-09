@@ -8,10 +8,9 @@ export default function Home() {
   return (
     <main className="flex w-full min-w-0 gap-5">
       <div className="w-full min-w-0 space-y-5">
-        <PostEditor />
-        {/* <FeedTab/> */}
+        {/* <PostEditor />
         <Tabs defaultValue="my-feed">
-          <TabsList className="h-10 w-full grid-cols-2 gap-2 p-2">
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="my-feed" className="cursor-pointer">
               My Feed
             </TabsTrigger>
@@ -25,7 +24,8 @@ export default function Home() {
           <TabsContent value="following-feed">
             <FollowingFeed />
           </TabsContent>
-        </Tabs>
+        </Tabs> */}
+        <h1 className="w-full text-center"> Feed will go here...</h1>
       </div>
       
       <TrendzSidebar />
