@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "nodemon",
+    "build": "next build && tsc --project tsconfig.server.json",
+    "start": "cross-env NODE_ENV=production node dist/server.js",
     "lint": "next lint",
     "postinstall": "prisma generate"
   },
@@ -33,6 +33,7 @@
     "arctic": "^3.5.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "cross-env": "^7.0.3",
     "date-fns": "^4.1.0",
     "firebase": "^11.6.0",
     "framer-motion": "^12.9.4",
@@ -67,9 +68,11 @@
     "eslint": "^9",
     "eslint-config-next": "15.2.1",
     "eslint-config-prettier": "^10.1.1",
+    "nodemon": "^3.1.10",
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   }
 }
