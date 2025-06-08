@@ -1,4 +1,4 @@
-# WePost - (🚧 Under Development 🚧)
+# WePost - A simple social platform
 
 WePost is a modern and minimalistic social media platform that allows users to share posts, connect with others, and engage in discussions. Built with cutting-edge technologies, WePost offers a seamless and secure user experience.
 
