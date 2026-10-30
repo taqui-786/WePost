@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 import withPlaiceholder from "@plaiceholder/next";
 const nextConfig: NextConfig = {
   /* config options here */
+  turbopack: {},
   experimental:{
     staleTimes:{
       dynamic:30,
@@ -17,7 +18,7 @@ const nextConfig: NextConfig = {
         }
       ],
    },
-  serverExternalPackages:["@node-rs/argon2"],
+  serverExternalPackages: ["@node-rs/argon2", "sharp"],
 };
 
 export default withPlaiceholder(nextConfig);

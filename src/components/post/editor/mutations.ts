@@ -1,6 +1,5 @@
 import {
   InfiniteData,
-  Query,
   QueryFilters,
   useMutation,
   useQueryClient,
@@ -19,12 +18,16 @@ export function useSubmitPostMutation() {
   const mutation = useMutation({
     mutationFn: submitPost,
     onSuccess: async (newPost) => {
-      const queryFilter: QueryFilters<
-        InfiniteData<PostPage, string | null>,
-        Error
-      > = { queryKey: ["post-feed"], predicate(query) {
-        return query.queryKey.includes("my-feed") || (query.queryKey.includes("user-posts") && query.queryKey.includes(user.id)) 
-      } };
+      const queryFilter: QueryFilters = {
+        queryKey: ["post-feed"],
+        predicate(query) {
+          return (
+            query.queryKey.includes("my-feed") ||
+            (query.queryKey.includes("user-posts") &&
+              query.queryKey.includes(user.id))
+          );
+        },
+      };
 
       await queryClient.cancelQueries(queryFilter);
 
@@ -51,14 +54,9 @@ export function useSubmitPostMutation() {
       queryClient.invalidateQueries({
         queryKey: queryFilter.queryKey,
         predicate(query) {
-          return queryFilter.predicate!(
-            query as Query<
-              InfiniteData<PostPage, string | null>,
-              Error,
-              InfiniteData<PostPage, string | null>,
-              readonly unknown[]
-            >
-          ) && !query.state.data;
+          return (
+            queryFilter.predicate!(query) && !query.state.data
+          );
         },
       });
 
