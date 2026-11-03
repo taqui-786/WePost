@@ -38,30 +38,35 @@ const {postId} = await context.params;
 export async function POST(
   req: Request,
   context: { params: Promise<{ postId: string }> },
-) { 
-try { 
+) {
+try {
     const { user: loggedInUser } = await validateRequest();
     if (!loggedInUser) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
     const { postId } = await context.params;
-    await prisma.bookmark.upsert({
-        where:{
-            userId_postId:{
-                userId:loggedInUser.id,
-                postId:postId
-            }
-        },
-        create:{
-            userId: loggedInUser.id,
-            postId: postId,
-        },
-        update:{}
-    })
-return Response.json({message:"Post Bookmarked"}, { status: 200 });
+    const created = await prisma.$transaction(async (tx) => {
+      const existing = await tx.bookmark.findUnique({
+        where: { userId_postId: { userId: loggedInUser.id, postId } },
+        select: { id: true },
+      });
+      if (existing) return false;
+      await tx.bookmark.create({
+        data: { userId: loggedInUser.id, postId },
+      });
+      await tx.post.update({
+        where: { id: postId },
+        data: { bookmarkCount: { increment: 1 } },
+      });
+      return true;
+    });
+
+    return Response.json(
+      { message: created ? "Post Bookmarked" : "Already Bookmarked" },
+      { status: 200 },
+    );
 } catch (error) {
     console.log(error);
-
     return Response.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
@@ -77,11 +82,19 @@ export async function DELETE(
         return Response.json({ error: "Unauthorized" }, { status: 401 });
       }
       const { postId } = await context.params;
-      await prisma.bookmark.deleteMany({
-        where: {
-          userId: loggedInUser.id,
-          postId: postId,
-        },
+      await prisma.$transaction(async (tx) => {
+        const deleted = await tx.bookmark.deleteMany({
+          where: {
+            userId: loggedInUser.id,
+            postId: postId,
+          },
+        });
+        if (deleted.count > 0) {
+          await tx.post.update({
+            where: { id: postId },
+            data: { bookmarkCount: { decrement: 1 } },
+          });
+        }
       });
       return new Response();
     } catch (error) {

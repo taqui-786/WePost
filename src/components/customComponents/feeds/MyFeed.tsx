@@ -25,6 +25,7 @@ function MyFeed() {
           pageParam ? { searchParams: { cursor: pageParam } } : {},
         )
         .json<PostPage>(),
+    staleTime: 1000 * 60 * 5,
     initialPageParam: null as string | null,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   });

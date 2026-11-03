@@ -14,8 +14,10 @@ export const metadata: Metadata = {
 }
 export default async function Layout({
   children,
+  modal,
 }: {
   children: React.ReactNode;
+  modal: React.ReactNode;
 }) {
   const session = await validateRequest();
   if (!session.user) redirect("/login");
@@ -32,6 +34,8 @@ export default async function Layout({
         </div>
         <MenuBar className="sticky bottom-0 flex w-full justify-center gap-5 border-t bg-card py-2 sm:hidden" />
       </div>
+      {/* Parallel route slot: renders the intercepted /posts/[postId] modal */}
+      {modal}
        </RealtimeProvider>
     </SessionProvider>
   );

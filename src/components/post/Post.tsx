@@ -113,7 +113,7 @@ function Post({ post }: { post: PostData }) {
               <LikeButton
                 postId={post.id}
                 initialState={{
-                  likes: post._count.likes,
+                  likes: post.likeCount,
                   isLikedByUser: !!post.likes.some(
                     ({ userId }) => userId === user.id,
                   ),
@@ -156,7 +156,7 @@ function CommentButton({ post, onClick }: CommentsButton) {
     >
       <MessageSquare className="size-5" />
       <span className="text-sm font-medium tabular-nums">
-        {post._count.Comment} <span className="hidden sm:inline">comments</span>
+        {post.commentCount} <span className="hidden sm:inline">comments</span>
       </span>
     </button>
   );

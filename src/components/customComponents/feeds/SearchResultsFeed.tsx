@@ -28,6 +28,7 @@ function SearchResultsFeed({ query }: { query: string }) {
           },
         })
         .json<PostPage>(),
+    staleTime: 1000 * 60 * 5,
     initialPageParam: null as string | null,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   });

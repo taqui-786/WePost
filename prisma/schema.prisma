@@ -67,6 +67,12 @@ model Post {
   userId              String
   attachments         Media[]
   images              String[]
+
+  // Denormalized O(1) counters (no COUNT() joins on feed reads)
+  likeCount           Int            @default(0)
+  commentCount        Int            @default(0)
+  bookmarkCount       Int            @default(0)
+
   likes               Like[]
   bookmarks           Bookmark[]
   user                User           @relation(references: [id], fields: [userId], onDelete: Cascade)
@@ -74,6 +80,9 @@ model Post {
   Comment             Comment[]
   linkedNotifications Notification[]
 
+  // O(1) cursor pagination index
+  @@index([createdAt(sort: Desc), id(sort: Desc)])
+  @@index([userId, createdAt(sort: Desc)])
   @@map("posts")
 }
 

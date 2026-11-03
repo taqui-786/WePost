@@ -1,52 +1,70 @@
 'use client'
 import { useLikeInfo } from "@/hooks/useLikeInfo";
-import kyInstance from "@/lib/ky";
 import { LikeInfoType } from "@/lib/types";
-import { QueryKey, useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 import { Heart } from "lucide-react";
+import NumberFlow from "@number-flow/react";
+import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils";
+import { useOptimisticLike } from "@/hooks/useOptimisticLike";
 
 interface LikeButtonProps {
     postId: string;
     initialState: LikeInfoType;
 }
-function LikeButton({ initialState, postId }: LikeButtonProps) {
-    const { data } = useLikeInfo(postId, initialState)
-    const queryClient = useQueryClient();
-    const queryKey: QueryKey = ["like-info", postId];
-    const { mutate } = useMutation({
-        mutationFn: () => data.isLikedByUser ? kyInstance.delete(`/api/posts/${postId}/likes`) : kyInstance.post(`/api/posts/${postId}/likes`),
-        onMutate: async () => {
-            await queryClient.cancelQueries({ queryKey });
-            const previousState = queryClient.getQueryData<LikeInfoType>(queryKey);
-            queryClient.setQueryData<LikeInfoType>(queryKey, () => ({
-                likes: (previousState?.likes || 0) + (previousState?.isLikedByUser ? -1 : 1),
-                isLikedByUser: !previousState?.isLikedByUser
-            }));
-            return { previousState };
-        },
-        onError(error, variables, context){
-            queryClient.setQueryData(queryKey, context?.previousState);
-            toast.error("Failed to like post.")
-            console.log(error);
-            
-        }
 
-    })
+function LikeButton({ initialState, postId }: LikeButtonProps) {
+    const { data } = useLikeInfo(postId, initialState);
+    const { mutate, isPending } = useOptimisticLike(postId);
+    const liked = data.isLikedByUser;
 
     return (
-        <button 
-        onClick={() => mutate()}
-        className="flex items-center gap-2 cursor-pointer"
-      
+        <button
+            onClick={() => mutate(liked ? "unlike" : "like")}
+            disabled={isPending}
+            aria-label={liked ? "Unlike post" : "Like post"}
+            aria-pressed={liked}
+            className={cn(
+                "group flex items-center gap-1.5 rounded-full px-2 py-1 text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-80",
+                liked
+                  ? "text-rose-500 hover:bg-rose-500/10"
+                  : "text-muted-foreground hover:bg-rose-500/10 hover:text-rose-500"
+            )}
         >
-
-<Heart className={cn("size-5  ", data.isLikedByUser&& " text-red-500 fill-red-500")} />
-<span className="text-sm font-medium tabular-nums ">{data.likes} <span className="hidden sm:inline">likes</span></span>
+            <span className="relative flex size-5 items-center justify-center">
+                <AnimatePresence mode="popLayout">
+                    {liked && (
+                        <motion.span
+                            key="burst"
+                            aria-hidden
+                            initial={{ scale: 0, opacity: 1 }}
+                            animate={{ scale: 1.8, opacity: 0 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.4, ease: "easeOut" }}
+                            className="absolute inline-flex size-4 rounded-full bg-rose-500/40"
+                        />
+                    )}
+                </AnimatePresence>
+                <motion.span
+                    whileTap={{ scale: 0.6 }}
+                    animate={{ scale: liked ? 1.15 : 1 }}
+                    transition={{ type: "spring", stiffness: 500, damping: 25 }}
+                    className="relative"
+                >
+                    <Heart
+                        className={cn(
+                            "size-5 transition-colors duration-150",
+                            liked && "fill-rose-500 text-rose-500"
+                        )}
+                    />
+                </motion.span>
+            </span>
+            <NumberFlow
+                value={data.likes}
+                format={{ notation: "compact" }}
+                className="text-sm font-medium tabular-nums leading-none"
+            />
+            <span className="hidden sm:inline text-[13px] font-medium leading-none">likes</span>
         </button>
-    )
+    );
 }
-
-
 export default LikeButton

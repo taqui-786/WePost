@@ -10,17 +10,23 @@ export async function submitComment({ post, content }: { post: PostData, content
     const { user } = await validateRequest()
     if (!user) throw new Error("Unauthorized")
     const { content: contentValidated } = createCommentSchema.parse({ content })
-    const [newComment] = await prisma.$transaction([
-        prisma.comment.create({
+    const shouldNotify = post.user.id !== user.id
+
+    const [newComment] = await prisma.$transaction(async (tx) => {
+        const comment = await tx.comment.create({
             data: {
                 content: contentValidated,
                 postId: post.id,
                 userId: user.id
             },
             include: getCommentDataInclude(user.id)
-        }),
-        ...(post.user.id !== user.id ? [
-            prisma.notification.create({
+        })
+        await tx.post.update({
+            where: { id: post.id },
+            data: { commentCount: { increment: 1 } },
+        })
+        if (shouldNotify) {
+            await tx.notification.create({
                 data: {
                     issuerId: user.id,
                     recipientId: post.user.id,
@@ -28,9 +34,11 @@ export async function submitComment({ post, content }: { post: PostData, content
                     type: "COMMENT"
                 }
             })
-        ] : [])
-    ])
-    if (post.user.id !== user.id) {
+        }
+        return [comment]
+    })
+
+    if (shouldNotify) {
         await publishToUser(post.user.id, {
             type: "notification",
             payload: { type: "COMMENT", postId: post.id },
@@ -49,10 +57,16 @@ export async function deleteComment(commentId: string) {
     });
     if (!comment) throw new Error("Comment Not Found.")
     if (comment.userId !== user.id) throw new Error("Unauthorized")
-    const deletedComment = await prisma.comment.delete({
-        where: { id: commentId },
-        include: getCommentDataInclude(user.id)
-
+    const [deletedComment] = await prisma.$transaction(async (tx) => {
+        const result = await tx.comment.delete({
+            where: { id: commentId },
+            include: getCommentDataInclude(user.id)
+        })
+        await tx.post.update({
+            where: { id: comment.postId },
+            data: { commentCount: { decrement: 1 } },
+        })
+        return [result]
     })
     return deletedComment;
 }

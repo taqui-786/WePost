@@ -64,12 +64,6 @@ export function getPostDataInclude(loggedInUserId: string) {
         userId: true
       }
     },
-    _count: {
-      select: {
-        likes: true,
-        Comment: true
-      }
-    }
   } satisfies Prisma.PostInclude;
 }
 export const postDataInclude = {

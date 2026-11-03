@@ -28,7 +28,8 @@ function HashtagsFeed({hashtag}:{hashtag:string}) {
             },
           })
           .json<PostPage>(),
-      initialPageParam: null as string | null,
+      staleTime: 1000 * 60 * 5,
+    initialPageParam: null as string | null,
       getNextPageParam: (lastPage) => lastPage.nextCursor,
     });
   const posts = data?.pages.flatMap((page) => page.posts) || [];

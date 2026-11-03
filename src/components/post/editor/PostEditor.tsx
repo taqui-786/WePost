@@ -245,6 +245,21 @@ function PostEditor() {
     if (files.length) handleFilesSelected(files);
   };
 
+  // Paste image(s) from clipboard straight into the composer (Ctrl/⌘+V).
+  const handlePaste = (e: React.ClipboardEvent) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    const imageFiles = Array.from(items)
+      .filter((item) => item.kind === "file" && item.type.startsWith("image/"))
+      .map((item) => item.getAsFile())
+      .filter((file): file is File => !!file);
+
+    if (imageFiles.length) {
+      e.preventDefault();
+      handleFilesSelected(imageFiles);
+    }
+  };
+
   return (
     <Card
       className="overflow-hidden shadow-sm transition-shadow focus-within:ring-2 focus-within:ring-primary/30"
@@ -252,6 +267,7 @@ function PostEditor() {
       onDragLeave={handleDragLeave}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
+      onPaste={handlePaste}
     >
       <CardContent className="relative p-4 sm:p-5">
         {isDragging && (
@@ -291,15 +307,10 @@ function PostEditor() {
 
               <div className="flex items-center gap-3">
                 {trimmedLength > 0 && (
-                  <span
-                    className={cn(
-                      "text-xs tabular-nums text-muted-foreground transition-colors",
-                      remaining <= 20 && remaining >= 0 && "text-amber-500",
-                      isOverLimit && "font-medium text-destructive",
-                    )}
-                  >
-                    {remaining}
-                  </span>
+                  <CharRing
+                    remaining={remaining}
+                    isOverLimit={isOverLimit}
+                  />
                 )}
                 <LoadingButton
                   onClick={onSubmit}
@@ -321,3 +332,47 @@ function PostEditor() {
 }
 
 export default PostEditor;
+
+function CharRing({
+  remaining,
+  isOverLimit,
+}: {
+  remaining: number;
+  isOverLimit: boolean;
+}) {
+  const MAX = MAX_CHARS;
+  const used = Math.min(MAX, MAX - remaining);
+  const pct = Math.min(1, used / MAX);
+  const radius = 10;
+  const circumference = 2 * Math.PI * radius;
+
+  const tone = isOverLimit
+    ? "stroke-destructive text-destructive"
+    : remaining <= 20
+      ? "stroke-amber-500 text-amber-500"
+      : "stroke-primary text-primary";
+
+  return (
+    <div className="relative flex size-7 items-center justify-center" title={`${remaining} characters left`}>
+      <svg viewBox="0 0 24 24" className="size-7 -rotate-90">
+        <circle cx="12" cy="12" r={radius} fill="none" strokeWidth="2" className="stroke-muted" />
+        <circle
+          cx="12"
+          cy="12"
+          r={radius}
+          fill="none"
+          strokeWidth="2"
+          strokeDasharray={circumference}
+          strokeDashoffset={circumference * (1 - pct)}
+          strokeLinecap="round"
+          className={tone}
+        />
+      </svg>
+      {remaining <= 20 && (
+        <span className={cn("absolute text-[9px] font-semibold tabular-nums", tone.split(" ")[1])}>
+          {Math.max(remaining, -99)}
+        </span>
+      )}
+    </div>
+  );
+}

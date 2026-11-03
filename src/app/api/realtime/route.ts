@@ -11,9 +11,11 @@ import type { RealtimeEvent } from "@/lib/realtime";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-// ponytail: Hobby plans cap this lower; the browser EventSource auto-reconnects,
-// so a shorter maxDuration just means more frequent reconnects.
-export const maxDuration = 300;
+// Hobby plan caps serverless functions at 60s. The browser EventSource
+// reconnects automatically when the connection drops, so a short maxDuration
+// just means more frequent reconnects — harmless.
+export const maxDuration = 60;
+// ponytail: 60s Hobby cap means the SSE stream reconnects ~1/min; EventSource hides it but presence/heartbeat churn rises. Upgrade to a long-lived route/Ably/Pusher if you outgrow Hobby.
 
 const POLL_MS = 2000;
 const HEARTBEAT_MS = 25_000;
