@@ -19,7 +19,7 @@ function FollowingFeed() {
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
-    queryKey: ["post-feed", "my-feed"],
+    queryKey: ["post-feed", "following"],
     queryFn: ({ pageParam }) =>
       kyInstance
         .get(
@@ -47,7 +47,7 @@ function FollowingFeed() {
       onBottomReached={() => hasNextPage && !isFetching && fetchNextPage()}
       className="space-y-5"
     >
-      <NewPostsPill queryKey={["post-feed", "my-feed"]} />
+      <NewPostsPill queryKey={["post-feed", "following"]} />
       {posts.map((post) => (
         <Post key={post.id} post={post} />
       ))}

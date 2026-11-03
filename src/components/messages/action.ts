@@ -5,6 +5,8 @@ import prisma from "@/lib/prisma"
 import { getMessageDataInclude } from "@/lib/types"
 import { createMessageSchema } from "@/lib/validation"
 import { publishToUser } from "@/lib/realtime"
+import { checkRateLimit } from "@/lib/r2"
+
 export const checkServerSideAuthenticated = async () => {
   const { user: loggedInUser } = await validateRequest()
   if (!loggedInUser) throw new Error("Unauthenticated")
@@ -13,7 +15,9 @@ export const checkServerSideAuthenticated = async () => {
 export const createUserChat = async (friendId: string) => {
 
   const loggedInUser = await checkServerSideAuthenticated()
-  // Check if conversation already exists
+  if (friendId === loggedInUser.id) throw new Error("You cannot chat with yourself.")
+
+  // Get the existing 1:1 conversation (idempotent — navigating is the goal).
   const existingConversation = await prisma.conversation.findFirst({
     where: {
       participants: {
@@ -27,10 +31,10 @@ export const createUserChat = async (friendId: string) => {
   });
 
   if (existingConversation) {
-    throw new Error("User already in chat.")
+    return existingConversation.id;
   }
 
-  await prisma.conversation.create({
+  const conversation = await prisma.conversation.create({
     data: {
       createdById: loggedInUser.id,
       participants: {
@@ -43,11 +47,11 @@ export const createUserChat = async (friendId: string) => {
   });
   await publishToUser(friendId, {
     type: "chat-created",
-    payload: { friendId: loggedInUser.id },
+    payload: { conversationId: conversation.id, friendId: loggedInUser.id },
   });
   await publishToUser(friendId, { type: "refresh-chat-feed" });
 
-  return true;
+  return conversation.id;
 }
 
 export const deleteConversationAction = async (conversationId: string) => {
@@ -72,14 +76,26 @@ export const deleteConversationAction = async (conversationId: string) => {
 
 }
 
-export const submitMessagesAction = async({content,conversationId,senderId}:{content:string, senderId:string, conversationId:string}) =>{
+export const submitMessagesAction = async({content,conversationId}:{content:string, conversationId:string}) =>{
   const userData = await checkServerSideAuthenticated()
+
+  const allowed = checkRateLimit(`msg:${userData.id}`, 60, 60 * 1000)
+  if (!allowed.allowed) throw new Error("Too many messages. Please slow down.")
+
   const { content: contentValidated } = createMessageSchema.parse({ content })
+
+  // Authorise the sender as a participant before writing.
+  const senderParticipant = await prisma.participant.findFirst({
+    where: { conversationId, userId: userData.id },
+    select: { id: true },
+  })
+  if (!senderParticipant) throw new Error("Unauthorized")
+
 const message =   await prisma.message.create({
     data:{
       content:contentValidated,
       conversationId,
-      senderId
+      senderId: userData.id,
     },
     include: getMessageDataInclude(userData.id)
   })
@@ -93,7 +109,7 @@ const message =   await prisma.message.create({
     if (userId !== userData.id) {
       await publishToUser(userId, {
         type: "new-message",
-        payload: { conversationId, senderId: userData.id },
+        payload: { conversationId, message },
       })
       await publishToUser(userId, { type: "refresh-chat-feed" })
     }

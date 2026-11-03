@@ -5,22 +5,25 @@ import prisma from "@/lib/prisma";
 import { getUserDataSelect } from "@/lib/types";
 import { User } from "@prisma/client";
 import { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import React, { cache } from "react";
+
 interface PageProps {
   params: Promise<{ messageId: string }>;
 }
 export const metadata: Metadata = {
   title: "Messages"
 }
+
 const getConversation = cache(
   async (conversationId: string, loggedInUserId: string) => {
-    const user = await prisma.conversation.findFirst({
+    // Only participants may open the conversation.
+    const conversation = await prisma.conversation.findFirst({
       where: {
         id: conversationId,
+        participants: { some: { userId: loggedInUserId } },
       },
       include: {
-        createdByUser: true,
         participants: {
           select: {
             user: {
@@ -31,34 +34,38 @@ const getConversation = cache(
             id: true,
           },
         },
-        messages: true,
       },
     });
-    if (!user) notFound();
-    return user;
+    if (!conversation) notFound();
+    return conversation;
   },
 );
+
 async function page({ params }: PageProps) {
   const { user: loggedInUser } = await validateRequest();
   if (!loggedInUser) {
+    redirect("/login");
+  }
+
+  const { messageId } = await params;
+  const conversation = await getConversation(messageId, loggedInUser.id);
+  const otherParticipant = conversation.participants.find(
+    (participant) => participant.userId !== loggedInUser.id,
+  );
+
+  if (!otherParticipant) {
     return (
-      <p className="text-destructive">
-        You&apos;re not authorized to view this page.
+      <p className="text-muted-foreground p-8 text-center">
+        This conversation has no other participant.
       </p>
     );
   }
-  const { messageId } = await params;
-  const conversation = await getConversation(messageId, loggedInUser.id);
-  const headerUser = conversation.participants.filter(
-    (user) => user.userId !== loggedInUser.id,
-  );
 
   return (
-    <div className="flex w-full md:w-2/3 flex-col">
-      <MessageHeader user={headerUser[0].user} conversationId={messageId} />
+    <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col overflow-hidden">
+      <MessageHeader user={otherParticipant.user} conversationId={messageId} />
       <MessagePage
         messageId={messageId}
-        friendId={headerUser[0].user.id}
         loggedInUserData={loggedInUser as User}
       />
     </div>

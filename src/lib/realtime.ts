@@ -34,7 +34,6 @@ export function getRedis(): Redis | null {
 
 export const globalStream = () => GLOBAL_STREAM;
 export const userStream = (userId: string) => `${USER_STREAM_PREFIX}${userId}`;
-export const presenceKey = () => PRESENCE_KEY;
 
 async function xadd(streamKey: string, event: RealtimeEvent) {
   const redis = getRedis();

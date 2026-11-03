@@ -1,6 +1,4 @@
 import type { NextConfig } from "next";
-// @ts-check
-import withPlaiceholder from "@plaiceholder/next";
 const nextConfig: NextConfig = {
   /* config options here */
   turbopack: {},
@@ -32,4 +30,4 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ["@node-rs/argon2", "sharp"],
 };
 
-export default withPlaiceholder(nextConfig);
+export default nextConfig;

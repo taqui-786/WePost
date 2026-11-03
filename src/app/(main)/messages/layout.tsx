@@ -9,13 +9,16 @@ export default async function Layout({
 }: {
   children: React.ReactNode;
 }) {
-  const loggedinUser = await validateRequest() 
-if(!loggedinUser) return notFound()
+  const session = await validateRequest();
+  if (!session.user) return notFound();
+
   return (
-    <main className="w-full flex   rounded-lg border bg-card text-card-foreground shadow-sm ">
-     <Users userId={loggedinUser.user?.id } className="md:flex hidden w-1/3"/>
-        {children}
-    
+    <main className="flex min-h-0 w-full overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm">
+      <Users
+        userId={session.user.id}
+        className="hidden min-h-0 w-80 flex-col border-r md:flex lg:w-96"
+      />
+      {children}
     </main>
   );
 }

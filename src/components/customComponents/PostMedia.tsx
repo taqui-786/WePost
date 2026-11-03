@@ -5,9 +5,6 @@ import { ImageOff } from "lucide-react";
 
 interface PostMediaProps {
   media: string;
-  /** Skips lazy loading. Use for above-the-fold media. */
-  priority?: boolean;
-  className?: string;
 }
 
 function isVideoUrl(url: string) {
@@ -25,11 +22,7 @@ function isVideoUrl(url: string) {
  * Images are served straight from R2 (sized + re-encoded to webp at upload
  * time) instead of via the /_next/image optimizer, which 504s on large files.
  */
-export default function PostMedia({
-  media,
-  priority = false,
-  className,
-}: PostMediaProps) {
+export default function PostMedia({ media }: PostMediaProps) {
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
 
@@ -42,7 +35,6 @@ export default function PostMedia({
       className={cn(
         "relative mx-auto w-full max-w-lg overflow-hidden rounded-2xl bg-muted",
         !loaded && !failed && "min-h-[14rem]",
-        className,
       )}
     >
       {/* Skeleton shimmer shown until the media paints */}
@@ -69,7 +61,7 @@ export default function PostMedia({
         <img
           src={media}
           alt="Post attachment"
-          loading={priority ? "eager" : "lazy"}
+          loading="lazy"
           decoding="async"
           onLoad={() => setLoaded(true)}
           onError={() => setFailed(true)}

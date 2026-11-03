@@ -9,6 +9,9 @@ import { cn } from "@/lib/utils";
 import NotificationBtn from "./customComponents/actionButtons/NotificationBtn";
 import { notificationInitialState } from "./post/comment/action";
 import { useSession } from "@/app/(main)/SessionProvider";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import kyInstance from "@/lib/ky";
+import { useRealtimeEvent } from "@/hooks/RealtimeProvider";
 
 interface MenuBarProps {
   className?: string;
@@ -21,6 +24,18 @@ function MenuBar({ className }: MenuBarProps) {
     unreadcount: 0,
   });
   const router = usePathname();
+  const queryClient = useQueryClient();
+  const { data: messageUnread } = useQuery({
+    queryKey: ["message-unread-count"],
+    queryFn: () =>
+      kyInstance
+        .get("/api/message/unread-count")
+        .json<{ count: number }>(),
+    refetchInterval: 60 * 1000,
+  });
+  useRealtimeEvent("new-message", () => {
+    queryClient.invalidateQueries({ queryKey: ["message-unread-count"] });
+  });
   const activeLinkStyle =
     "rounded-none border-b-4 border-b-primary sm:border-b-0 sm:border-l-4 sm:border-l-primary text-primary";
   useEffect(() => {
@@ -69,7 +84,14 @@ function MenuBar({ className }: MenuBarProps) {
           asChild
         >
           <Link href="/messages">
-            <Mail className="size-5" />{" "}
+            <div className="relative">
+              <Mail className="size-5" />
+              {!!messageUnread?.count && (
+                <span className="absolute -right-1 -top-2 rounded-full bg-primary px-1 text-[10px] font-medium tabular-nums text-primary-foreground">
+                  {messageUnread.count > 9 ? "9+" : messageUnread.count}
+                </span>
+              )}
+            </div>{" "}
             <span className="hidden lg:inline">Messages</span>
           </Link>
         </Button>

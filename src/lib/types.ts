@@ -153,7 +153,6 @@ export interface notificationCountInfo {
   unreadcount: number
 }
 
-export interface messageParticipantType { id: string, participants: messageConversationType[] }
 export interface messageConversationType {
   id: string,
   conversationId: string,
@@ -161,20 +160,6 @@ export interface messageConversationType {
   user: UserData
 }
 
-
-export interface UserMessages {
-  id: string
-  conversationId: string
-  senderId: string
-  content: string
-  status: string
-  createdAt: string
-
-  conversation?: messageConversationType
-  sender: UserData
-
-
-}
 export function getMessageDataInclude(loggedInUserId: string) {
   return {
   
@@ -187,6 +172,14 @@ export function getMessageDataInclude(loggedInUserId: string) {
 export type messageData = Prisma.MessageGetPayload<{
   include: ReturnType<typeof getMessageDataInclude>;
 }>
+
+export interface ConversationListItem {
+  id: string;
+  participants: messageConversationType[];
+  lastMessage: messageData | null;
+  unreadCount: number;
+  createdAt: Date;
+}
 
 export interface MessagePage {
   messages: messageData[];

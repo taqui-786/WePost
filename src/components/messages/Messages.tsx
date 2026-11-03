@@ -2,75 +2,66 @@ import { messageData } from '@/lib/types'
 import React from 'react'
 import UserAvatar from '../customComponents/UserAvatar'
 import { cn } from '@/lib/utils'
-// import { Check, CheckCheck } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 
-function Messages({ message, iAmSender = false }: { message: messageData; iAmSender: boolean }) {
-  return (
-    <div className="group/message">
-      <div
-        className={cn(
-          "flex items-start gap-3 mb-1",
-          iAmSender ? "flex-row-reverse text-right" : "flex-row"
-        )}
-      >
-        <UserAvatar
-          userAvatarUrl={message.sender.avatarUrl}
-          userName={message.sender.username}
-          className={cn(
-            "rounded-xl",
-            "ring-2 ring-white dark:ring-zinc-900",
-            "transition-transform duration-200",
-            "group-hover/message:scale-105"
-          )}
-        />
-
-        <div className="flex-1 space-y-1">
-          <div
-            className={cn(
-              "flex items-baseline gap-2",
-              iAmSender ? "justify-start flex-row-reverse" : "flex-row"
-            )}
-          >
-            <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
-              {message.sender.displayName}
-            </span>
-            <span className="text-xs text-zinc-500 dark:text-zinc-400">
-              {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}
-            </span>
-          </div>
-          <p className="text-sm text-zinc-600 dark:text-zinc-300">{message.content}</p>
-        </div>
-      </div>
-
-      {/* {message.content && (
-        <div
-          className={cn(
-            "flex items-center gap-1.5",
-            iAmSender ? "justify-end mr-11" : "ml-11"
-          )}
-        >
-          {[{ emoji: "🙌", reacted: true }, { emoji: "🔥", reacted: false }].map((reaction) => (
-            <button
-              type="button"
-              key={reaction.emoji}
-              className={cn(
-                "px-2 py-1 rounded-lg text-xs",
-                "transition-colors duration-200",
-                reaction.reacted
-                  ? "bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400"
-                  : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400",
-                "hover:bg-violet-200 dark:hover:bg-violet-800/30"
-              )}
-            >
-              {reaction.emoji} 2
-            </button>
-          ))}
-        </div>
-      )} */}
-    </div>
-  );
+interface MessagesProps {
+  message: messageData
+  iAmSender: boolean
+  showAvatar: boolean
+  showTimestamp: boolean
 }
 
+function Messages({ message, iAmSender, showAvatar, showTimestamp }: MessagesProps) {
+  return (
+    <div
+      className={cn(
+        "flex w-full items-end gap-2",
+        iAmSender ? "justify-end" : "justify-start",
+      )}
+    >
+      {/* Spacer to keep alignment when the other party's avatar is hidden */}
+      {!iAmSender && (
+        showAvatar ? (
+          <UserAvatar
+            userAvatarUrl={message.sender.avatarUrl}
+            userName={message.sender.username}
+            className="rounded-full"
+            size={32}
+          />
+        ) : (
+          <span className="w-8 shrink-0" />
+        )
+      )}
+
+      <div
+        className={cn(
+          "flex max-w-[78%] flex-col gap-1 sm:max-w-lg",
+          iAmSender ? "items-end" : "items-start",
+        )}
+      >
+        <p
+          className={cn(
+            "rounded-2xl px-3.5 py-2 text-sm whitespace-pre-wrap break-words leading-relaxed",
+            iAmSender
+              ? "rounded-br-md bg-primary text-primary-foreground"
+              : "rounded-bl-md bg-muted text-foreground",
+          )}
+        >
+          {message.content}
+        </p>
+        {showTimestamp && (
+          <span
+            className={cn(
+              "px-1 text-[10px] tabular-nums text-muted-foreground",
+              iAmSender ? "text-right" : "text-left",
+            )}
+          >
+            {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}
+          </span>
+        )}
+      </div>
+    </div>
+  )
+}
 
 export default Messages

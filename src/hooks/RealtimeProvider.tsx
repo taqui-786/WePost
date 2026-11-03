@@ -7,22 +7,18 @@ import {
   useEffect,
   useMemo,
   useRef,
-  useState,
 } from "react";
 import { useSession } from "@/app/(main)/SessionProvider";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-export type RealtimePayload<T = unknown> = T;
 type Handler = (payload: unknown) => void;
 
 type RealtimeContextValue = {
-  connected: boolean;
   subscribe: (type: string, handler: Handler) => () => void;
 };
 
 const RealtimeContext = createContext<RealtimeContextValue>({
-  connected: false,
   subscribe: () => () => {},
 });
 
@@ -34,7 +30,6 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
   const { user } = useSession();
   const queryClient = useQueryClient();
   const handlers = useRef(new Map<string, Set<Handler>>());
-  const [connected, setConnected] = useState(false);
 
   const subscribe = useCallback((type: string, handler: Handler) => {
     const map = handlers.current;
@@ -49,8 +44,6 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
     if (!user) return;
 
     const source = new EventSource("/api/realtime");
-    source.onopen = () => setConnected(true);
-    source.onerror = () => setConnected(false);
     source.onmessage = (event) => {
       let parsed: { type: string; payload?: unknown };
       try {
@@ -102,16 +95,10 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
       });
     };
 
-    return () => {
-      source.close();
-      setConnected(false);
-    };
+    return () => source.close();
   }, [user, queryClient]);
 
-  const value = useMemo(
-    () => ({ connected, subscribe }),
-    [connected, subscribe],
-  );
+  const value = useMemo(() => ({ subscribe }), [subscribe]);
 
   return (
     <RealtimeContext.Provider value={value}>
@@ -136,8 +123,4 @@ export function useRealtimeEvent<T = unknown>(
     () => subscribe(type, (payload) => handlerRef.current(payload as T)),
     [subscribe, type],
   );
-}
-
-export function useRealtimeConnected() {
-  return useContext(RealtimeContext).connected;
 }

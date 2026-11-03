@@ -5,15 +5,20 @@ import { Send } from 'lucide-react'
 import React from 'react'
 
 async function page() {
-  const {user} = await validateRequest()
+  const { user } = await validateRequest()
+  if (!user) return null
+
   return (
     <>
-      <Users userId={user?.id } className='w-full flex md:hidden'/>
-    <div className="w-2/3 hidden md:grid place-content-center">
+      {/* Mobile: the conversation list is the whole screen */}
+      <Users userId={user.id} className="flex min-h-0 w-full flex-col md:hidden" />
+
+      {/* Desktop: placeholder when no conversation is selected */}
+      <div className="hidden min-h-0 w-full place-content-center overflow-hidden md:grid">
         <Card className="w-full border-none bg-transparent shadow-none">
           <CardContent className="flex flex-col items-center justify-center p-6 py-8 text-center">
             <div className="bg-muted mb-3 flex h-24 w-24 items-center justify-center rounded-full">
-            <Send className="text-muted-foreground h-12 w-12" />
+              <Send className="text-muted-foreground h-12 w-12" />
             </div>
             <h4 className="mb-1 text-xl font-medium">Your messages</h4>
             <p className="text-muted-foreground mb-4 text-base">
@@ -21,7 +26,7 @@ async function page() {
             </p>
           </CardContent>
         </Card>
-    </div>
+      </div>
     </>
   )
 }
