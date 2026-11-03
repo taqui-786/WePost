@@ -12,10 +12,10 @@ interface MessageInputProps {
     loggedInUserData:User
 }
 
-function MessageInput({ messageId, friendId, loggedInUserData }: MessageInputProps) {
+function MessageInput({ messageId, loggedInUserData }: MessageInputProps) {
     const [input, setInput] = useState("")
     
-    const mutation = useMessageSendMutation(messageId,loggedInUserData,friendId)
+    const mutation = useMessageSendMutation(messageId,loggedInUserData)
     
     function onSubmit(e: React.FormEvent) {
         e.preventDefault()

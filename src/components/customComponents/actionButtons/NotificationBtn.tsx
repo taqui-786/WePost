@@ -5,8 +5,9 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Bell } from "lucide-react";
 import { notificationCountInfo } from "@/lib/types";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import kyInstance from "@/lib/ky";
+import { useRealtimeEvent } from "@/hooks/RealtimeProvider";
 
 function NotificationBtn({
   router,
@@ -18,6 +19,10 @@ function NotificationBtn({
   initialState: notificationCountInfo;
 }) {
     
+  const queryClient = useQueryClient();
+  useRealtimeEvent("notification", () => {
+    queryClient.invalidateQueries({ queryKey: ["unread-notifications-count"] });
+  });
   const { data } = useQuery({
     queryKey: ["unread-notifications-count"],
     queryFn: () =>

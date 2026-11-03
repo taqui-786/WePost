@@ -42,7 +42,7 @@ function MessageHeader({user, conversationId}:{user:UserData, conversationId:str
                   </div>
                 </div>
 
-      <ChatActionDropdown conversationId={conversationId} friendId={user.id}/>
+      <ChatActionDropdown conversationId={conversationId}/>
     </div>
   )
 }

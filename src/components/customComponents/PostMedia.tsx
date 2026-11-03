@@ -1,16 +1,11 @@
 "use client";
-import Image from "next/image";
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { ImageOff } from "lucide-react";
 
-/** Soft neutral blur used while a heavy photo is still downloading. */
-const BLUR_DATA_URL =
-  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAAD1BMVEUwMDUjIygpKS43Nz0dHSCRWP9iAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAdUlEQVR4nKWRUQ6AIAxDu633P7MRWhyJURP7Be8xAhsyM+HkmYggiYalYhiIF2rVRBN1ZivBwlY5Sx5FXcEnUbvAj6vw/lx00X7eCuKuie7VZsQllvE4NI8ZL8SJCKvFLZoaePAptgxMgtrrtDlBWjUqcaWZAxx7A/4Ad0IKAAAAAElFTkSuQmCC";
-
 interface PostMediaProps {
   media: string;
-  /** Skips lazy loading + eager-decodes. Use for above-the-fold media. */
+  /** Skips lazy loading. Use for above-the-fold media. */
   priority?: boolean;
   className?: string;
 }
@@ -23,9 +18,12 @@ function isVideoUrl(url: string) {
 
 /**
  * Renders a post attachment (image or video) with:
- *  - native lazy loading (heavy images only download when scrolled near)
+ *  - native lazy loading (heavy media only downloads when scrolled near)
  *  - a themed skeleton shimmer while the file is still in flight
- *  - a blur-up fade-in once the media is ready, avoiding a blank/broken box
+ *  - a fade-in once the media paints, avoiding a blank/broken box
+ *
+ * Images are served straight from R2 (sized + re-encoded to webp at upload
+ * time) instead of via the /_next/image optimizer, which 504s on large files.
  */
 export default function PostMedia({
   media,
@@ -68,21 +66,16 @@ export default function PostMedia({
           )}
         />
       ) : (
-        <Image
+        <img
           src={media}
           alt="Post attachment"
-          width={720}
-          height={720}
           loading={priority ? "eager" : "lazy"}
-          priority={priority}
-          placeholder="blur"
-          blurDataURL={BLUR_DATA_URL}
-          sizes="(max-width: 640px) 100vw, 640px"
+          decoding="async"
           onLoad={() => setLoaded(true)}
           onError={() => setFailed(true)}
           className={cn(
-            "mx-auto size-fit max-h-[30rem] rounded-2xl transition-[opacity,filter] duration-500 ease-out",
-            loaded ? "opacity-100 blur-0" : "opacity-0 blur-md",
+            "mx-auto block max-h-[30rem] w-auto max-w-full rounded-2xl transition-opacity duration-500 ease-out",
+            loaded ? "opacity-100" : "opacity-0",
           )}
         />
       )}

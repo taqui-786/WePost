@@ -8,6 +8,7 @@ import InfiniteScrollingContainer from "../InfiniteScrollingContainer";
 import PostsLoadingSkeleton from "../../post/PostLoadingSkeleton";
 import { Card, CardContent } from "../../ui/card";
 import { User } from "lucide-react";
+import NewPostsPill from "../NewPostsPill";
 
 function FollowingFeed() {
   const {
@@ -46,6 +47,7 @@ function FollowingFeed() {
       onBottomReached={() => hasNextPage && !isFetching && fetchNextPage()}
       className="space-y-5"
     >
+      <NewPostsPill queryKey={["post-feed", "my-feed"]} />
       {posts.map((post) => (
         <Post key={post.id} post={post} />
       ))}

@@ -7,11 +7,9 @@ import { toast } from 'sonner'
 import { deleteConversationAction } from './action'
 import { useRouter } from 'next/navigation'
 import { useQueryClient } from '@tanstack/react-query'
-import { useSocket } from '@/hooks/SocketContext'
 
-function ChatActionDropdown({conversationId, friendId}:{conversationId:string, friendId:string}) {
+function ChatActionDropdown({conversationId}:{conversationId:string}) {
     const router = useRouter()
-    const {socket} = useSocket()
     const queryClient = useQueryClient()
     async function handleDeleteChat() {
         try {
@@ -19,7 +17,6 @@ function ChatActionDropdown({conversationId, friendId}:{conversationId:string, f
             if(!deleteChat) return toast.error("Failed to deleteChat!")
                 toast.success("Chat Deleted Successfully.")
               await queryClient.invalidateQueries({ queryKey: ['chat-users'] })
-              socket?.emit("new-chat-created", friendId)
             router.push('/messages')
         } catch (error) {
             console.log(error);

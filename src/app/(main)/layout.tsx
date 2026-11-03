@@ -4,7 +4,7 @@ import React from "react";
 import SessionProvider from "./SessionProvider";
 import Navbar from "./Navbar";
 import MenuBar from "@/components/MenuBar";
-import { SocketProvider } from "@/hooks/SocketContext";
+import { RealtimeProvider } from "@/hooks/RealtimeProvider";
 import { Metadata } from "next";
 export const metadata: Metadata = {
   title: {
@@ -22,7 +22,7 @@ export default async function Layout({
 
   return (
     <SessionProvider value={session}>
-       <SocketProvider>
+       <RealtimeProvider>
 
       <div className="flex min-h-dvh h-full flex-col bg-background">
         <Navbar />
@@ -32,7 +32,7 @@ export default async function Layout({
         </div>
         <MenuBar className="sticky bottom-0 flex w-full justify-center gap-5 border-t bg-card py-2 sm:hidden" />
       </div>
-       </SocketProvider>
+       </RealtimeProvider>
     </SessionProvider>
   );
 }

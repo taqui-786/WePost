@@ -1,13 +1,13 @@
 "use client";
 import kyInstance from "@/lib/ky";
 import { messageData, MessagePage as MessagePageType } from "@/lib/types";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useEffect, useRef, useState } from "react";
 import MessageInput from "./MessageInput";
 import CommentsLoadingSkeleton from "../skeletons/CommentLoadingSkeleton";
 import Messages from "./Messages";
 import { User } from "@prisma/client";
-import { useSocket } from "@/hooks/SocketContext";
+import { useRealtimeEvent } from "@/hooks/RealtimeProvider";
 import { useInView } from "react-intersection-observer";
 
 interface MessagePageProps {
@@ -20,7 +20,7 @@ function MessagePage({
   friendId,
   loggedInUserData,
 }: MessagePageProps) {
-  const { socket } = useSocket();
+  const queryClient = useQueryClient();
   const [messages, setMessages] = useState<messageData[]>([]);
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
@@ -51,18 +51,14 @@ function MessagePage({
       pageParams: [...data.pageParams].reverse(),
     }),
   });
-  useEffect(() => {
-    const handleNewMessage = (message: messageData) => {
-      console.log(message);
-
-      setMessages((prev) => [...prev, message]);
-    };
-
-    socket?.on("new-message-received", handleNewMessage);
-    return () => {
-      socket?.off("new-message-received", handleNewMessage);
-    };
-  }, [socket]);
+  useRealtimeEvent<{ conversationId: string; senderId: string }>(
+   "new-message",
+   (payload) => {
+     if (!payload || payload.conversationId !== messageId) return;
+     if (payload.senderId === loggedInUserData?.id) return;
+     queryClient.invalidateQueries({ queryKey: ["user-messages", messageId] });
+   },
+ );
   useEffect(() => {
     const newMessages = data?.pages.flatMap((page) => page.messages) || [];
     setMessages((prev) => {

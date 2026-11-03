@@ -5,11 +5,9 @@ import { submitMessagesAction } from "./action";
 import { messageData, MessagePage } from "@/lib/types";
 import { toast } from "sonner";
 import { User } from "@prisma/client";
-import { useSocket } from "@/hooks/SocketContext";
 
-export const useMessageSendMutation = (messageId: string, loggedInUser:User, friendId:string) => {
+export const useMessageSendMutation = (messageId: string, loggedInUser:User) => {
   const queryClient = useQueryClient();
-  const {socket} = useSocket()
   const mutation = useMutation({
     mutationFn: submitMessagesAction,
     
@@ -47,7 +45,6 @@ export const useMessageSendMutation = (messageId: string, loggedInUser:User, fri
           }
         }
       };
-      socket?.emit("new-message-sent",{message:optimisticMessage, friendId:friendId })
       
       // Optimistically update the cache
       queryClient.setQueryData<InfiniteData<MessagePage, string | null>>(queryKey, (oldData) => {

@@ -6,6 +6,7 @@ import Post from "../../post/Post";
 import kyInstance from "@/lib/ky";
 import InfiniteScrollingContainer from "../InfiniteScrollingContainer";
 import PostsLoadingSkeleton from "../../post/PostLoadingSkeleton";
+import NewPostsPill from "../NewPostsPill";
 
 function MyFeed() {
   const {
@@ -44,6 +45,7 @@ function MyFeed() {
       onBottomReached={() => hasNextPage && !isFetching && fetchNextPage()}
       className="space-y-5"
     >
+      <NewPostsPill queryKey={["post-feed", "my-feed"]} />
       {posts.map((post) => (
         <Post key={post.id} post={post} />
       ))}

@@ -2,43 +2,30 @@
 import kyInstance from "@/lib/ky";
 import { messageParticipantType } from "@/lib/types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import UserTooltip from "../UserTooltip";
 import Link from "next/link";
 import UserAvatar from "../UserAvatar";
 import UserCardSkeleton from "@/components/skeletons/UserCardSkeleton";
-import { useSocket } from "@/hooks/SocketContext";
-type ActiveUserEntry = [userId: string, socketId: string];
-
-type ActiveUsersList = ActiveUserEntry[];
+import { useRealtimeEvent } from "@/hooks/RealtimeProvider";
 function MessageUsersFeed({ userId }: { userId: string | undefined }) {
-  const [activeUsers, setActiveUsers] = useState<ActiveUsersList | undefined>();
-  const { socket } = useSocket();
+  const [activeUsers, setActiveUsers] = useState<string[]>([]);
 const queryClient = useQueryClient()
 const query = useQuery({
   queryKey: ["chat-users", userId],
   queryFn: () =>
     kyInstance.get("/api/message/users").json<messageParticipantType[]>(),
 });
-  useEffect(() => {
-    socket?.emit("set-user-active", null, (data: ActiveUsersList) => {
-      const filteredUser = data.filter(
-        (user: Array<string>) => user[0] !== userId,
-      );
-      setActiveUsers(filteredUser);
-    });
-    socket?.on("users-active", (data) => {
-      setActiveUsers(() =>
-        data.filter((user: Array<string>) => user[0] !== userId),
-      );
-    });
-    socket?.on("refresh-chat-feed", () => {
-      console.log("Refreshing feed....");
-      
-     queryClient.invalidateQueries({queryKey:["chat-users",userId]})
-    });
-  }, [socket]);
-  console.log({ activeUsers });
+
+useRealtimeEvent<string[]>("presence", (ids) => {
+  setActiveUsers((ids ?? []).filter((id) => id !== userId));
+});
+useRealtimeEvent("refresh-chat-feed", () => {
+  queryClient.invalidateQueries({ queryKey: ["chat-users", userId] });
+});
+useRealtimeEvent("chat-created", () => {
+  queryClient.invalidateQueries({ queryKey: ["chat-users", userId] });
+});
 
   const users = query.data;
   return (
@@ -86,9 +73,7 @@ const query = useQuery({
                         </Link>
                       </UserTooltip>
 
-                      {activeUsers?.find(
-                        (usr: Array<string>) => usr[0] === theUser.id,
-                      ) ? (
+                      {activeUsers?.includes(theUser.id) ? (
                         <span className="text-xs font-medium text-green-500">
                           Active Now
                         </span>

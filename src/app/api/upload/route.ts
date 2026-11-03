@@ -7,6 +7,7 @@ import {
   validateUploadFile,
 } from "@/lib/r2";
 import { NextRequest, NextResponse } from "next/server";
+import sharp from "sharp";
 
 export async function POST(req: NextRequest) {
   try {
@@ -97,9 +98,39 @@ export async function POST(req: NextRequest) {
     }[] = [];
 
     for (const file of files) {
-      const buffer = Buffer.from(await file.arrayBuffer());
-      const safeKey = generateSafeStorageKey(user.id, folder, file.type);
-      const publicUrl = await uploadBufferToR2(buffer, safeKey, file.type);
+      let buffer: Buffer = Buffer.from(await file.arrayBuffer());
+      let contentType = file.type;
+      let keyMime = file.type;
+
+      // Downscale + re-encode images so feed images stay light. 7MB+ originals
+      // make Next's image optimizer time out (504) and render broken.
+      const isOptimizableImage =
+        file.type.startsWith("image/") && file.type !== "image/gif";
+      if (isOptimizableImage) {
+        try {
+          const maxWidth = folder === "avatars" ? 512 : 1600;
+          buffer = await sharp(buffer)
+            .rotate() // honour EXIF orientation
+            .resize({
+              width: maxWidth,
+              height: maxWidth,
+              fit: "inside",
+              withoutEnlargement: true,
+            })
+            .webp({ quality: 82 })
+            .toBuffer();
+          contentType = "image/webp";
+          keyMime = "image/webp";
+        } catch (error) {
+          console.error(
+            "[Upload API] Image optimization failed, using original:",
+            error,
+          );
+        }
+      }
+
+      const safeKey = generateSafeStorageKey(user.id, folder, keyMime);
+      const publicUrl = await uploadBufferToR2(buffer, safeKey, contentType);
 
       uploadedFiles.push({
         name: file.name,

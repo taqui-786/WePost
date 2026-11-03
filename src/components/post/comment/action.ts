@@ -4,6 +4,7 @@ import { validateRequest } from "@/auth";
 import prisma from "@/lib/prisma";
 import { getCommentDataInclude, PostData } from "@/lib/types";
 import { createCommentSchema } from "@/lib/validation";
+import { publishToUser } from "@/lib/realtime";
 
 export async function submitComment({ post, content }: { post: PostData, content: string }) {
     const { user } = await validateRequest()
@@ -29,6 +30,12 @@ export async function submitComment({ post, content }: { post: PostData, content
             })
         ] : [])
     ])
+    if (post.user.id !== user.id) {
+        await publishToUser(post.user.id, {
+            type: "notification",
+            payload: { type: "COMMENT", postId: post.id },
+        });
+    }
 
     return newComment;
 }

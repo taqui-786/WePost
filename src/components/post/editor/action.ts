@@ -4,6 +4,7 @@ import { validateRequest } from "@/auth";
 import prisma from "@/lib/prisma";
 import { getPostDataInclude } from "@/lib/types";
 import { createPostSchema } from "@/lib/validation";
+import { publishGlobal } from "@/lib/realtime";
 
 export interface mediaType {
   url: string;
@@ -23,6 +24,10 @@ const readyUrls = attachments?.map((itm) => itm.url)
       userId: user.id,
     },
     include: getPostDataInclude(user.id),
+  });
+  await publishGlobal({
+    type: "new-post",
+    payload: { authorId: user.id, postId: newPost.id },
   });
   return newPost;
 };

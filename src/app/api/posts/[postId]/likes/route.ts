@@ -1,6 +1,7 @@
 import { validateRequest } from "@/auth";
 import prisma from "@/lib/prisma";
 import { LikeInfoType } from "@/lib/types";
+import { publishGlobal, publishToUser } from "@/lib/realtime";
 
 export async function GET(req: Request, context: { params: Promise<{ postId: string }> },) {
   try {
@@ -90,6 +91,21 @@ export async function POST(
       ] : [])
     ])
 
+    if (loggedInUser.id !== post.userId) {
+      await publishToUser(post.userId, {
+        type: "post-liked",
+        payload: { from: loggedInUser.username, postId },
+      });
+      await publishToUser(post.userId, {
+        type: "notification",
+        payload: { type: "LIKE", postId },
+      });
+    }
+
+    // Keep the like count live for everyone currently viewing the post.
+    const likes = await prisma.like.count({ where: { postId } });
+    await publishGlobal({ type: "like-updated", payload: { postId, likes } });
+
 
     return Response.json({ message: "Post Liked" }, { status: 200 });
   } catch (error) {
@@ -135,6 +151,16 @@ export async function DELETE(
         }
       })
     ])
+
+    const likes = await prisma.like.count({ where: { postId } });
+    await publishGlobal({ type: "like-updated", payload: { postId, likes } });
+    if (loggedInUser.id !== post.userId) {
+      await publishToUser(post.userId, {
+        type: "notification",
+        payload: { type: "LIKE_REMOVED", postId },
+      });
+    }
+
     return new Response();
   } catch (error) {
     console.log(error);
