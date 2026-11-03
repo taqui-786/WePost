@@ -15,7 +15,7 @@ import {
 import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
 import kyInstance from "@/lib/ky";
-import { handleFirebaseImageUpload } from "@/lib/Firebase";
+import { handleR2ImageUpload } from "@/lib/upload";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -81,8 +81,13 @@ export default function EditProfileDialog({ defaultValues }: ProfileFormProps) {
     try {
       setIsLoading(true);
       if (newImage) {
-        const getImageUrl = await handleFirebaseImageUpload(newImage as File);
-        setValue("avatarUrl", getImageUrl.file.url);
+        const getImageUrl = await handleR2ImageUpload(newImage as File, "avatars");
+        if (getImageUrl.success && getImageUrl.file.url) {
+          setValue("avatarUrl", getImageUrl.file.url);
+        } else {
+          toast.error(getImageUrl.error || "Failed to upload avatar");
+          return;
+        }
       }
       const finalValues = getValues()
       const res = await kyInstance.put("/api/users/edit", {

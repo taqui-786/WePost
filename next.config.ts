@@ -9,15 +9,26 @@ const nextConfig: NextConfig = {
       dynamic:30,
     }
   },
-  images:{
+  images: {
     remotePatterns: [
-        {
-          protocol: 'https',
-          hostname: 'firebasestorage.googleapis.com',
-          
-        }
-      ],
-   },
+      {
+        protocol: "https",
+        hostname: "firebasestorage.googleapis.com",
+      },
+      {
+        protocol: "https",
+        hostname: "*.r2.dev",
+      },
+      {
+        protocol: "https",
+        hostname: "**.r2.dev",
+      },
+      {
+        protocol: "https",
+        hostname: "pub-6cb995ac25324613a456b55971827f44.r2.dev",
+      },
+    ],
+  },
   serverExternalPackages: ["@node-rs/argon2", "sharp"],
 };
 

@@ -1,60 +1,56 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Image as ImgIcon, Trash } from "lucide-react";
+import { AlertCircle, Image as ImgIcon, Loader2, RotateCcw, Trash2 } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
-interface PostImageUploadProps {
-  onFileSelected: (file: File[]) => void;
-  attachments: UploadFileType[];
-  onRemoveAttachment: (mediaId: string, idx: number) => void;
-  disabled?: boolean;
-}
 
 export interface UploadFileType {
   file: File;
   mediaId: string;
   isUploading: boolean;
   progress: number; // 0-100
+  error?: string;
+  /** Populated once the file finishes uploading to R2. */
+  media?: {
+    url: string;
+    type: "IMAGE" | "VIDEO";
+  };
 }
+
+interface PostImageUploadProps {
+  onFileSelected: (file: File[]) => void;
+  disabled?: boolean;
+}
+
+/**
+ * Toolbar button that opens the native file picker for images & videos.
+ */
 export function PostImageUpload({
   onFileSelected,
-  attachments,
-  onRemoveAttachment,
   disabled = false,
 }: PostImageUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   return (
     <>
-      {attachments && (
-        <div
-          className={cn(
-            "flex flex-col gap-3",
-            attachments.length > 1 && "sm:grid sm:grid-cols-2",
-          )}
-        >
-          {attachments.map((fileData, idx) => (
-            <AttachmentPreview
-              key={idx}
-              attachment={fileData}
-              onRemoveClick={() => onRemoveAttachment(fileData.mediaId, idx)}
-            />
-          ))}{" "}
-        </div>
-      )}
       <Button
-        size="icon"
-        variant={"ghost"}
-        onClick={() => fileInputRef.current?.click()}
+        type="button"
+        size="sm"
+        variant="ghost"
+        title="Add photos or a video"
+        aria-label="Add photos or a video"
         disabled={disabled}
+        onClick={() => fileInputRef.current?.click()}
+        className="gap-2 text-primary hover:text-primary"
       >
-        <ImgIcon className="text-primary" size={20} />
+        <ImgIcon className="size-5" />
+        <span className="hidden lg:inline">Media</span>
       </Button>
       <input
         type="file"
         className="sr-only hidden"
-        accept="image/*, video/*"
+        accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime"
         multiple
         ref={fileInputRef}
         onChange={(e) => {
@@ -69,66 +65,154 @@ export function PostImageUpload({
   );
 }
 
-interface AttachmentPreviewProps {
-  attachment: UploadFileType;
-  onRemoveClick?: () => void;
+interface AttachmentPreviewListProps {
+  attachments: UploadFileType[];
+  onRemove: (mediaId: string) => void;
+  onRetry: (mediaId: string) => void;
 }
 
-export function AttachmentPreview({
-  attachment: { file, isUploading, progress },
-  onRemoveClick,
-}: AttachmentPreviewProps) {
-  const [src, setSrc] = useState("");
+/**
+ * Responsive grid of attachment previews with live upload progress,
+ * failure state and retry support.
+ */
+export function AttachmentPreviewList({
+  attachments,
+  onRemove,
+  onRetry,
+}: AttachmentPreviewListProps) {
+  if (!attachments.length) return null;
 
-  useEffect(() => {
-    setSrc(URL.createObjectURL(file));
-    return () => URL.revokeObjectURL(src); // clean up
-  }, [file]);
+  const count = attachments.length;
 
   return (
     <div
-      className={`relative mx-auto size-fit ${isUploading ? "opacity-50" : ""}`}
+      className={cn(
+        "mt-3 grid gap-2",
+        count === 1 ? "grid-cols-1" : "grid-cols-2",
+        count === 3 && "sm:grid-cols-3",
+      )}
+      role="list"
+      aria-label="Attachments"
     >
-      {file.type.startsWith("image") ? (
+      {attachments.map((attachment) => (
+        <AttachmentPreview
+          key={attachment.mediaId}
+          attachment={attachment}
+          onRemoveClick={() => onRemove(attachment.mediaId)}
+          onRetryClick={() => onRetry(attachment.mediaId)}
+          single={count === 1}
+        />
+      ))}
+    </div>
+  );
+}
+
+interface AttachmentPreviewProps {
+  attachment: UploadFileType;
+  onRemoveClick?: () => void;
+  onRetryClick?: () => void;
+  single?: boolean;
+}
+
+export function AttachmentPreview({
+  attachment: { file, isUploading, progress, error },
+  onRemoveClick,
+  onRetryClick,
+  single = false,
+}: AttachmentPreviewProps) {
+  const [src, setSrc] = useState<string>("");
+
+  useEffect(() => {
+    if (!file) return;
+    const objectUrl = URL.createObjectURL(file);
+    setSrc(objectUrl);
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [file]);
+
+  if (!file || !src) {
+    return null;
+  }
+
+  const isImage = file.type.startsWith("image");
+  const hasError = Boolean(error);
+
+  return (
+    <div
+      role="listitem"
+      className={cn(
+        "group relative overflow-hidden rounded-2xl border bg-muted",
+        single ? "aspect-video" : "aspect-square",
+      )}
+    >
+      {isImage ? (
         <Image
           src={src}
-          alt="Attachment preview"
-          width={500}
-          height={500}
-          className="size-fit max-h-[30rem] rounded-2xl"
+          alt={file.name || "Attachment preview"}
+          fill
+          unoptimized
+          sizes="(max-width: 640px) 100vw, 320px"
+          className="object-cover"
         />
       ) : (
-        <video controls className="size-fit max-h-[30rem] rounded-2xl">
+        <video
+          controls
+          className="h-full w-full object-cover"
+          preload="metadata"
+        >
           <source src={src} type={file.type} />
         </video>
       )}
 
-      {/* Upload Progress Overlay */}
+      {/* Live upload progress overlay */}
       {isUploading && (
-        <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-black/40">
-          <div className="text-center text-white">
-            <div className="text-lg font-medium">Uploading...</div>
-            <div className="mt-1 text-sm">{progress}%</div>
-            <div className="mt-2 h-2 w-40 rounded bg-white/30">
-              <div
-                className="h-full rounded bg-green-400"
-                style={{ width: `${progress}%` }}
-              ></div>
-            </div>
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/55 text-white backdrop-blur-[1px]">
+          <Loader2 className="size-6 animate-spin" />
+          <span className="text-xs font-medium tabular-nums">
+            Uploading {progress}%
+          </span>
+          <div className="h-1.5 w-24 overflow-hidden rounded-full bg-white/25">
+            <div
+              className="h-full rounded-full bg-primary transition-[width] duration-200 ease-out"
+              style={{ width: `${progress}%` }}
+            />
           </div>
         </div>
       )}
 
+      {/* Error overlay with retry */}
+      {hasError && !isUploading && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-destructive/85 p-3 text-center text-white">
+          <AlertCircle className="size-6" />
+          <span className="text-xs font-medium">
+            {error === "Upload failed" ? "Upload failed" : error}
+          </span>
+          {onRetryClick && (
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              className="h-7 gap-1 px-2 text-xs"
+              onClick={onRetryClick}
+            >
+              <RotateCcw className="size-3.5" />
+              Retry
+            </Button>
+          )}
+        </div>
+      )}
+
       {/* Remove button */}
-      {onRemoveClick && (
+      {onRemoveClick && !isUploading && (
         <Button
-          className="absolute top-2 right-2"
+          type="button"
+          className="absolute top-2 right-2 size-8 rounded-full opacity-90 transition-opacity group-hover:opacity-100"
           onClick={onRemoveClick}
           size="icon"
-          disabled={isUploading}
           variant="destructive"
+          title="Remove attachment"
+          aria-label="Remove attachment"
         >
-          <Trash size={25} />
+          <Trash2 className="size-4" />
         </Button>
       )}
     </div>

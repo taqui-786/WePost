@@ -25,12 +25,15 @@ export type signinSchemaValues = z.infer<typeof signinSchema>;
 
 export const createPostSchema = z.object({
   content: requiredString,
-  attachments: z.array(
-    z.object({
-      url: z.string(),
-      type: z.enum(["IMAGE", "VIDEO"]),
-    }),
-  ).optional(),
+  attachments: z
+    .array(
+      z.object({
+        url: z.string().url("Invalid media URL"),
+        type: z.enum(["IMAGE", "VIDEO"]),
+      }),
+    )
+    .max(5, "Maximum 5 attachments allowed")
+    .optional(),
 });
 
 export const ProfileFormSchema = z.object({

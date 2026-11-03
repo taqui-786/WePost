@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
@@ -7,19 +7,31 @@ import "./style.css";
 import { useSubmitPostMutation } from "./mutations";
 import LoadingButton from "@/components/ui/LoadingButton";
 import { Card, CardContent } from "@/components/ui/card";
-import { PostImageUpload, UploadFileType } from "./PostImageUpload";
-import { handleMultipleFirebaseUploads } from "@/lib/Firebase";
+import {
+  AttachmentPreviewList,
+  PostImageUpload,
+  UploadFileType,
+} from "./PostImageUpload";
+import { handleMultipleR2Uploads } from "@/lib/upload";
 import { mediaType } from "./action";
+import { useSession } from "@/app/(main)/SessionProvider";
+import UserAvatar from "@/components/customComponents/UserAvatar";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import { MAX_FILES_PER_POST } from "@/lib/r2";
+import { ImagePlus } from "lucide-react";
+
+const MAX_CHARS = 280;
+
 function PostEditor() {
+  const { user } = useSession();
   const [myFiles, setMyFiles] = useState<UploadFileType[]>([]);
-  const [readyFiles, setReadyFiles] = useState<mediaType[]>([]);
   const [isMediaUploading, setIsMediaUploading] = useState(false);
-  const removeFile = (mediaId: string, idx: number) => {
-    setMyFiles((prev) => prev.filter((media) => media.mediaId !== mediaId));
-    const theFile = readyFiles[idx]
-    setReadyFiles((files) => files.filter((itm) => itm.url !== theFile.url))
-  };
+  const [isDragging, setIsDragging] = useState(false);
+  const dragCounter = useRef(0);
+
   const mutation = useSubmitPostMutation();
+
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
@@ -28,9 +40,14 @@ function PostEditor() {
         italic: false,
       }),
       Placeholder.configure({
-        placeholder: "what's crack-a-lackin ?",
+        placeholder: "What's on your mind?",
       }),
     ],
+    editorProps: {
+      attributes: {
+        class: "min-h-[3rem] max-h-[20rem] overflow-y-auto outline-none",
+      },
+    },
   });
 
   const input =
@@ -38,82 +55,265 @@ function PostEditor() {
       blockSeparator: "\n",
     }) || "";
 
-  async function onSubmit() {
+  const trimmedLength = input.trim().length;
+  const remaining = MAX_CHARS - trimmedLength;
+  const isOverLimit = remaining < 0;
+  // Backend schema requires non-empty content (createPostSchema.requiredString).
+  const canSubmit =
+    trimmedLength > 0 &&
+    !isOverLimit &&
+    !isMediaUploading &&
+    !mutation.isPending;
+
+  const resetComposer = useCallback(() => {
+    setMyFiles([]);
+    editor?.commands.clearContent();
+  }, [editor]);
+
+  const onSubmit = useCallback(() => {
+    if (!canSubmit) return;
+    const attachments: mediaType[] = myFiles
+      .filter((f) => f.media)
+      .map((f) => f.media as mediaType);
+
     mutation.mutate(
       {
-        content: input,
-        attachments: readyFiles || [],
+        content: input.trim(),
+        attachments,
       },
       {
         onSuccess: () => {
-          setMyFiles([])
-          setReadyFiles([])
-          editor?.commands.clearContent();
+          resetComposer();
         },
       },
     );
-  }
-  const testingImageUpload = async (files: File[]) => {
-    setIsMediaUploading(true);
-    const fileWrappers: UploadFileType[] = files.map((file) => ({
-      file,
-      mediaId: crypto.randomUUID(),
-      isUploading: true,
-      progress: 0,
-    }));
+  }, [canSubmit, input, myFiles, mutation, resetComposer]);
 
-    // Add to local state before uploading
-    setMyFiles((prev) => [...prev, ...fileWrappers]);
-    const uploadedMedia = await handleMultipleFirebaseUploads(
-      files,
-      (index, progress) => {
-        setMyFiles((prev) =>
-          prev.map((file, idx) =>
-            idx === prev.length - files.length + index
-              ? { ...file, progress, isUploading: progress < 100 }
-              : file,
-          ),
+  const uploadFiles = useCallback(
+    async (entries: { file: File; mediaId: string }[]) => {
+      if (!entries.length) return;
+      setIsMediaUploading(true);
+      try {
+        const uploaded = await handleMultipleR2Uploads(
+          entries.map((entry) => entry.file),
+          (index, progress) => {
+            const id = entries[index]?.mediaId;
+            setMyFiles((prev) =>
+              prev.map((f) =>
+                f.mediaId === id
+                  ? { ...f, progress, isUploading: progress < 100 }
+                  : f,
+              ),
+            );
+          },
         );
-      },
-    );
 
-    if (!uploadedMedia) return;
+        if (!uploaded?.success || !uploaded.files) {
+          setMyFiles((prev) =>
+            prev.map((f) =>
+              entries.some((entry) => entry.mediaId === f.mediaId)
+                ? { ...f, isUploading: false, error: "Upload failed" }
+                : f,
+            ),
+          );
+          return;
+        }
 
-    const mediaFormatted: mediaType[] = uploadedMedia?.files!.map((item) => ({
-      url: item.url,
-      type: item.type.startsWith("image") ? "IMAGE" : "VIDEO",
-    }));
-    if (uploadedMedia.success) {
-      setIsMediaUploading(false);
+        const uploadedFiles = uploaded.files;
+        setMyFiles((prev) =>
+          prev.map((f) => {
+            const idx = entries.findIndex(
+              (entry) => entry.mediaId === f.mediaId,
+            );
+            if (idx === -1) return f;
+            const item = uploadedFiles[idx];
+            if (!item) {
+              return { ...f, isUploading: false, error: "Upload failed" };
+            }
+            return {
+              ...f,
+              isUploading: false,
+              progress: 100,
+              error: undefined,
+              media: {
+                url: item.url,
+                type:
+                  item.type.startsWith("image") || item.type === "IMAGE"
+                    ? "IMAGE"
+                    : "VIDEO",
+              },
+            };
+          }),
+        );
+      } finally {
+        setIsMediaUploading(false);
+      }
+    },
+    [],
+  );
+
+  const handleFilesSelected = useCallback(
+    (files: File[]) => {
+      const available = MAX_FILES_PER_POST - myFiles.length;
+      if (available <= 0) {
+        toast.warning(
+          `You can attach a maximum of ${MAX_FILES_PER_POST} files.`,
+        );
+        return;
+      }
+      const accepted = files.slice(0, available);
+      if (accepted.length < files.length) {
+        toast.warning(
+          `Only ${available} more file${available === 1 ? "" : "s"} can be added.`,
+        );
+      }
+      const entries = accepted.map((file) => ({
+        file,
+        mediaId: crypto.randomUUID(),
+      }));
+      setMyFiles((prev) => [
+        ...prev,
+        ...entries.map((entry) => ({
+          file: entry.file,
+          mediaId: entry.mediaId,
+          isUploading: true,
+          progress: 0,
+        })),
+      ]);
+      void uploadFiles(entries);
+    },
+    [myFiles.length, uploadFiles],
+  );
+
+  const handleRemove = useCallback((mediaId: string) => {
+    setMyFiles((prev) => prev.filter((f) => f.mediaId !== mediaId));
+  }, []);
+
+  const handleRetry = useCallback(
+    (mediaId: string) => {
+      const target = myFiles.find((f) => f.mediaId === mediaId);
+      if (!target) return;
+      setMyFiles((prev) =>
+        prev.map((f) =>
+          f.mediaId === mediaId
+            ? { ...f, isUploading: true, progress: 0, error: undefined }
+            : f,
+        ),
+      );
+      void uploadFiles([{ file: target.file, mediaId }]);
+    },
+    [myFiles, uploadFiles],
+  );
+
+  // Keyboard shortcut: Cmd/Ctrl + Enter to publish.
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+        e.preventDefault();
+        onSubmit();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onSubmit]);
+
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault();
+    if (!e.dataTransfer.types.includes("Files")) return;
+    dragCounter.current += 1;
+    setIsDragging(true);
+  };
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    dragCounter.current -= 1;
+    if (dragCounter.current <= 0) {
+      dragCounter.current = 0;
+      setIsDragging(false);
     }
-
-    setReadyFiles((prev) => [...prev, ...mediaFormatted]);
+  };
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    if (e.dataTransfer.types.includes("Files")) {
+      e.dataTransfer.dropEffect = "copy";
+    }
+  };
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    dragCounter.current = 0;
+    setIsDragging(false);
+    const files = Array.from(e.dataTransfer.files || []);
+    if (files.length) handleFilesSelected(files);
   };
 
   return (
-    <Card>
-      <CardContent className="p-6">
-        <div className="flex">
-          <EditorContent
-            editor={editor}
-            className="bg-background max-h-[20rem] w-full overflow-y-auto rounded-xl px-5 py-3"
+    <Card
+      className="overflow-hidden shadow-sm transition-shadow focus-within:ring-2 focus-within:ring-primary/30"
+      onDragEnter={handleDragEnter}
+      onDragLeave={handleDragLeave}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+    >
+      <CardContent className="relative p-4 sm:p-5">
+        {isDragging && (
+          <div className="pointer-events-none absolute inset-1 z-10 flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-primary bg-background/85 text-primary backdrop-blur-sm">
+            <ImagePlus className="size-6" />
+            <span className="text-sm font-medium">Drop media to attach</span>
+          </div>
+        )}
+
+        <div className="flex gap-3">
+          <UserAvatar
+            userAvatarUrl={user.avatarUrl}
+            userName={user.displayName}
+            size={44}
+            className="mt-0.5 flex-none"
           />
-        </div>
-        <div className="flex items-end justify-end gap-2">
-          <PostImageUpload
-            onFileSelected={testingImageUpload}
-            attachments={myFiles}
-            onRemoveAttachment={removeFile}
-          />
-          <LoadingButton
-            onClick={onSubmit}
-            disabled={!input.trim() || isMediaUploading || mutation.isPending}
-            className="mt-4 min-w-20"
-            size="sm"
-            loading={mutation.isPending}
-          >
-            Post
-          </LoadingButton>
+
+          <div className="min-w-0 flex-1">
+            <EditorContent editor={editor} className="w-full" />
+
+            <AttachmentPreviewList
+              attachments={myFiles}
+              onRemove={handleRemove}
+              onRetry={handleRetry}
+            />
+
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t pt-3">
+              <div className="flex items-center gap-1">
+                <PostImageUpload
+                  onFileSelected={handleFilesSelected}
+                  disabled={isMediaUploading || mutation.isPending}
+                />
+                <span className="hidden text-xs text-muted-foreground sm:inline">
+                  {myFiles.length}/{MAX_FILES_PER_POST}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                {trimmedLength > 0 && (
+                  <span
+                    className={cn(
+                      "text-xs tabular-nums text-muted-foreground transition-colors",
+                      remaining <= 20 && remaining >= 0 && "text-amber-500",
+                      isOverLimit && "font-medium text-destructive",
+                    )}
+                  >
+                    {remaining}
+                  </span>
+                )}
+                <LoadingButton
+                  onClick={onSubmit}
+                  disabled={!canSubmit}
+                  className="min-w-20 rounded-full"
+                  size="sm"
+                  loading={mutation.isPending}
+                  title="Publish (Ctrl/⌘ + Enter)"
+                >
+                  Post
+                </LoadingButton>
+              </div>
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>

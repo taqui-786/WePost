@@ -9,7 +9,7 @@ import PostMoreButton from "./PostMoreButton";
 import { Card, CardContent } from "../ui/card";
 import Linkify from "../customComponents/Linkify";
 import UserTooltip from "../customComponents/UserTooltip";
-import Image from "next/image";
+import PostMedia from "../customComponents/PostMedia";
 import LikeButton from "../customComponents/actionButtons/LikeButton";
 import BookmarkButton from "../customComponents/actionButtons/BookmarkButton";
 import { MessageSquare } from "lucide-react";
@@ -101,7 +101,7 @@ function Post({ post }: { post: PostData }) {
               )}
             >
               {post.images.map((media, indx) => {
-                return <MediaPreview media={media} key={indx} />;
+                return <PostMedia media={media} key={indx} />;
               })}
             </div>
           ) : (
@@ -143,43 +143,6 @@ function Post({ post }: { post: PostData }) {
 }
 
 export default Post;
-
-interface MediaPreviewProps {
-  media: string;
-}
-
-function MediaPreview({ media }: MediaPreviewProps) {
-  // if (media.includes("2Fimage")) {
-  //   return <DynamicImage url={media} />;
-  // }
-  if (media.includes("2Fimage")) {
-    return (
-      <Image
-        src={media}
-        alt="Attachment"
-        width={500}
-        height={500}
-        placeholder="blur"
-        blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGNgYGBgAAAABQABDQottAAAAABJRU5ErkJggg=="
-        className="mx-auto size-fit max-h-[30rem] rounded-2xl"
-      />
-    );
-  }
-
-  if (media.includes("2Fvideo")) {
-    return (
-      <div>
-        <video
-          src={media}
-          controls
-          className="mx-auto size-fit max-h-[30rem] rounded-2xl"
-        />
-      </div>
-    );
-  }
-
-  return <p className="text-destructive">Unsupported media type</p>;
-}
 
 interface CommentsButton {
   post: PostData;

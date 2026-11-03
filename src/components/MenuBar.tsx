@@ -2,17 +2,19 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import Link from "next/link";
-import { Bookmark, Home, Mail } from "lucide-react";
+import { Bookmark, Home, Mail, User } from "lucide-react";
 import { Card, CardContent } from "./ui/card";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import NotificationBtn from "./customComponents/actionButtons/NotificationBtn";
 import { notificationInitialState } from "./post/comment/action";
+import { useSession } from "@/app/(main)/SessionProvider";
 
 interface MenuBarProps {
   className?: string;
 }
 function MenuBar({ className }: MenuBarProps) {
+  const { user } = useSession();
   const [notificationState, setNotificationState] = useState<{
     unreadcount: number;
   }>({
@@ -83,6 +85,20 @@ function MenuBar({ className }: MenuBarProps) {
           <Link href="/bookmarks">
             <Bookmark className="size-5" />{" "}
             <span className="hidden lg:inline">Bookmarks</span>
+          </Link>
+        </Button>
+        <Button
+          className={cn(
+            "flex items-center justify-start gap-3",
+            router.startsWith(`/users/${user.username}`) && activeLinkStyle,
+          )}
+          variant="ghost"
+          title="Profile"
+          asChild
+        >
+          <Link href={`/users/${user.username}`}>
+            <User className="size-5" />{" "}
+            <span className="hidden lg:inline">Profile</span>
           </Link>
         </Button>
       </CardContent>
