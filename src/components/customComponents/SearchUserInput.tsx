@@ -13,20 +13,22 @@ export default function SearchUserInput() {
     router.push(`/search?q=${encodeURIComponent(q)}`);
   };
   return (
-    <form onSubmit={handleSubmit} method="GET" action="/search">
-    <div className="min-w-[270px] bg-gray-100 rounded-2xl  p-[1px]">
-      <div className="relative rounded-2xl overflow-hidden">
+    <form
+      onSubmit={handleSubmit}
+      method="GET"
+      action="/search"
+      className="min-w-0 flex-1 sm:flex-initial" role="search">
+      <div className="relative w-full sm:w-48 md:w-64 lg:w-72 xl:w-80 overflow-hidden rounded-2xl bg-gray-100 p-[1px]">
         <Input
           name="q"
-          className="peer ps-10 pe-10 py-2 rounded-2xl border-none bg-gray-100 focus-visible:ring-0 focus-visible:ring-offset-0"
+          aria-label="Search posts and users"
+          className="peer ps-9 pe-9 py-2 rounded-2xl border-none bg-gray-100 focus-visible:ring-0 focus-visible:ring-offset-0"
           placeholder="Search..."
         />
         <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 peer-disabled:opacity-50">
           <Search size={16} strokeWidth={2} />
         </div>
       </div>
-    </div>
-  </form>
-  
+    </form>
   );
 }

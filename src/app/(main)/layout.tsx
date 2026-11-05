@@ -28,11 +28,11 @@ export default async function Layout({
 
       <div className="flex min-h-dvh h-full flex-col bg-background">
         <Navbar />
-        <div className="mx-auto flex w-full max-w-7xl grow gap-5 p-5">
+        <div className="mx-auto flex w-full max-w-7xl grow gap-5 p-3 sm:p-5">
           <MenuBar className=" sticky top-[5.25rem] hidden h-fit flex-none  rounded-2xl   sm:block  xl:w-80" />
           {children}
         </div>
-        <MenuBar className="sticky bottom-0 flex w-full justify-center gap-5 border-t bg-card py-2 sm:hidden" />
+        <MenuBar className="sticky bottom-0 z-10 flex w-full justify-evenly gap-0 border-t bg-card py-2 sm:hidden" />
       </div>
       {/* Parallel route slot: renders the intercepted /posts/[postId] modal */}
       {modal}
